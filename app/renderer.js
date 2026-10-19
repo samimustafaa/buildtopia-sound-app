@@ -1,6 +1,6 @@
 'use strict';
 const $ = id => document.getElementById(id);
-const state = { catalog: [], images: {}, page: 'weapons', filter: 'All', query: '', selected: new Set(), applied: new Set(), connection: null, status: { state: 'disconnected' }, busy: false, playing: null, windows: true };
+const state = { catalog: [], images: {}, page: 'weapons', filter: 'All', query: '', selected: new Set(), applied: new Set(), connection: null, status: { state: 'disconnected' }, busy: false, updating: false, windows: true };
 const api = window.soundSwap;
 const escapeHtml = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 let toastTimer;
@@ -10,7 +10,7 @@ async function invoke(method, ...args) {
   if (!api) throw new Error('This is the interface preview. Open the Windows app to connect a game folder and apply sounds.');
   const result = await api[method](...args); if (!result.ok) throw new Error(result.error || 'The operation did not finish.'); return result.value;
 }
-function isDirty() { return state.selected.size !== state.applied.size || [...state.selected].some(id => !state.applied.has(id)); }
+function isDirty() { return state.connection?.removedExtras || state.selected.size !== state.applied.size || [...state.selected].some(id => !state.applied.has(id)); }
 function filtered() { return state.catalog.filter(item => item.section === state.page && (state.filter === 'All' || item.category === state.filter) && `${item.name} ${item.id} ${item.category}`.toLowerCase().includes(state.query)); }
 function selectable(item) { return item.available && item.differentAudio; }
 function updateFooter() {
@@ -48,7 +48,7 @@ function renderCards() {
     if (custom) art = '<div class="card-art custom"><img alt="" data-custom-image="' + item.id + '"></div>';
     else if (item.gameImages?.length) art = '<div class="card-art game-art">' + item.gameImages.map((image, index) => { const [x,y,right,bottom] = image.bounds; const cell = 110 / item.gameImages.length, scale = Math.min((cell-8)/(right-x), 34/(bottom-y)); return `<span class="game-image-cell" style="width:${cell}px"><img src="${escapeHtml(image.src)}" alt="${escapeHtml(item.name)} game artwork" style="width:${image.size[0]*scale}px;height:${image.size[1]*scale}px;left:${(cell-(right-x)*scale)/2-x*scale}px;top:${(44-(bottom-y)*scale)/2-y*scale}px"></span>`; }).join('') + '</div>';
     else art = `<div class="card-art placeholder-icon" aria-hidden="true"><svg><use href="#i-${item.section === 'vehicles' ? 'car' : item.section === 'traps' ? 'trap' : 'weapon'}"/></svg></div>`;
-    return `<article class="sound-card ${selected ? 'selected' : ''} ${!item.available ? 'unavailable' : ''}" data-id="${item.id}" title="${escapeHtml(item.note || 'Right-click to change image')}">${art}<div class="sound-details"><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.category)}<span class="detail-dot">·</span><span class="test-status ${item.tested ? 'tested' : ''}">${status}</span></p></div><div class="sound-actions"><button class="preview ${state.playing === item.id ? 'playing' : ''}" data-preview="${item.id}" aria-label="Preview ${escapeHtml(item.name)} BuildTopia sound" title="${item.preview ? 'Listen to BuildTopia sound' : 'No preview available'}" ${!item.preview ? 'disabled' : ''}><svg><use href="#i-play"/></svg></button><label class="card-toggle"><input type="checkbox" data-toggle="${item.id}" aria-label="Use BuildTopia sound for ${escapeHtml(item.name)}" ${selected ? 'checked' : ''} ${disabled ? 'disabled' : ''}><span>${label}</span></label>${item.note ? `<button class="item-info" data-info="${item.id}" aria-label="Details for ${escapeHtml(item.name)}"><svg><use href="#i-info"/></svg></button>` : '<span class="info-spacer"></span>'}</div></article>`;
+    return `<article class="sound-card ${selected ? 'selected' : ''} ${!item.available ? 'unavailable' : ''}" data-id="${item.id}" title="${escapeHtml(item.note || 'Right-click to change image')}">${art}<div class="sound-details"><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.category)}<span class="detail-dot">·</span><span class="test-status ${item.tested ? 'tested' : ''}">${status}</span></p></div><div class="sound-actions"><label class="card-toggle"><input type="checkbox" data-toggle="${item.id}" aria-label="Use BuildTopia sound for ${escapeHtml(item.name)}" ${selected ? 'checked' : ''} ${disabled ? 'disabled' : ''}><span>${label}</span></label>${item.note ? `<button class="item-info" data-info="${item.id}" aria-label="Details for ${escapeHtml(item.name)}"><svg><use href="#i-info"/></svg></button>` : '<span class="info-spacer"></span>'}</div></article>`;
   }).join('');
   document.querySelectorAll('[data-custom-image]').forEach(img => { img.src = state.images[img.dataset.customImage]; img.onerror = () => { img.style.display = 'none'; }; });
   updateFooter();
@@ -62,10 +62,9 @@ function setSelected(id, checked) {
     queue.push(...item.linked);
   }
 }
-function stopAudio() { $('audio').pause(); $('audio').currentTime = 0; state.playing = null; }
 function setPage(page) {
   if (state.busy) return;
-  stopAudio(); state.page = page; state.filter = 'All'; state.query = ''; $('search').value = '';
+  state.page = page; state.filter = 'All'; state.query = ''; $('search').value = '';
   document.querySelectorAll('[data-page]').forEach(button => button.classList.toggle('active', button.dataset.page === page));
   $('library').hidden = page === 'settings'; $('settings').hidden = page !== 'settings';
   if (page !== 'settings') {
@@ -90,12 +89,12 @@ async function connect(folder) {
 }
 async function install(restore = false) {
   if (state.busy) return;
-  stopAudio(); state.busy = true; $('progress-overlay').hidden = false; $('progress-label').textContent = restore ? 'Restoring original sounds…' : 'Building selected sounds…'; renderCards();
+  state.busy = true; $('progress-overlay').hidden = false; $('progress-label').textContent = restore ? 'Restoring original sounds…' : 'Building selected sounds…'; renderCards();
   try {
     const result = await invoke(restore ? 'restore' : 'apply', [...state.selected]);
     if (result) {
       state.selected = new Set(result.selected); state.applied = new Set(result.selected);
-      state.connection.original = result.resources === 0; state.connection.backedUp = true;
+      state.connection.removedExtras = false; state.connection.original = result.resources === 0; state.connection.backedUp = true;
       toast(result.warning || (restore || result.resources === 0 ? 'Original Creative Destruction sounds restored.' : `Applied ${state.selected.size} selected sounds. You can fully close SoundSwap and launch the game. Sounds stay installed.`), Boolean(result.warning));
       $('connection-note').textContent = `Connected · ${result.resources} sound resources installed · backup kept. You can fully close SoundSwap; sounds stay installed.`;
     }
@@ -110,16 +109,7 @@ $('cards').addEventListener('change', e => { const id = e.target.dataset.toggle;
 $('cards').addEventListener('click', async e => {
   const information = e.target.closest('[data-info]');
   if (information) { const item = state.catalog.find(x => x.id === information.dataset.info); info(item.name, item.note); return; }
-  const preview = e.target.closest('[data-preview]'); if (!preview) return;
-  const item = state.catalog.find(x => x.id === preview.dataset.preview); if (!item.preview) return;
-  const previous = state.playing; stopAudio();
-  if (previous !== item.id) {
-    state.playing = item.id; $('audio').src = item.preview;
-    try { await $('audio').play(); } catch { state.playing = null; toast('This preview could not be played.', true); }
-  }
-  renderCards();
 });
-$('audio').addEventListener('ended', () => { state.playing = null; renderCards(); });
 $('cards').addEventListener('contextmenu', async e => {
   const card = e.target.closest('[data-id]'); if (!card || state.busy) return; e.preventDefault();
   try { const image = await invoke('importImage', card.dataset.id); if (image) { state.images[card.dataset.id] = image; renderCards(); toast('Item image updated.'); } } catch (error) { toast(error.message, true); }
@@ -138,9 +128,8 @@ async function boot() {
     let result;
     if (api) result = await invoke('bootstrap');
     else result = { catalog: await fetch('data/catalog.json').then(r => r.json()), images: {}, status: { state: 'disconnected' }, connection: null, windows: false };
-    state.catalog = result.catalog;
-    const bundledImages = await fetch('data/game-images.json').then(r => r.json());
-    $('included-images').innerHTML = bundledImages.map(image => `<figure><img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.name)}"><figcaption>${escapeHtml(image.name.replace(/^(AssaultRifle|SubmachineGun|SniperRifle|Special|Pistol|Throwable|Shotgun)-?/, ''))}${image.assigned ? '' : ' · sound mapping unconfirmed'}</figcaption></figure>`).join(''); state.images = result.images; state.status = result.status; state.connection = result.connection; state.windows = result.windows;
+    state.catalog = result.catalog.filter(item => item.section === 'weapons');
+    state.images = result.images; state.status = result.status; state.connection = result.connection; state.windows = result.windows;
     if (result.connection) { $('folder').value = result.connection.folder; state.selected = new Set(result.connection.selections.filter(id => selectable(state.catalog.find(x => x.id === id) || {}))); state.applied = new Set(state.selected); $('connection-note').textContent = 'Connected · your installed sound profile is loaded.'; }
     renderFilters(); renderCards(); updateStatus();
     if (!api) $('connection-note').textContent = 'Interface preview only. The Windows app connects to your real game folder.';
@@ -155,8 +144,8 @@ function showPendingUpdate() {
   if(!pendingUpdate || state.busy || $('info-dialog').open || $('update-dialog').open) return;
   const r=pendingUpdate; pendingUpdate=null; promptedVersion=r.version;
   $('update-version').textContent=`Version ${r.version} is available. You have ${r.current}.`;
-  $('update-instructions').textContent = r.kind === 'installer' ? 'Download Setup.exe, close SoundSwap, and run the installer. It updates the same installation and keeps your settings and installed sounds.' : 'Download the ZIP and open the Setup.exe inside it. Close SoundSwap before installing. Your installed sounds stay in place.';
-  $('update-download').textContent = r.kind === 'installer' ? 'Download installer' : 'Download update';
+  $('update-instructions').textContent = 'Downloads here, updates this installation, then restarts SoundSwap. Your sounds and settings stay saved.';
+  $('update-download').textContent = 'Update & restart';
   $('update-notes').textContent=r.notes || 'A new release is ready to download.';
   $('update-dialog').showModal();
 }
@@ -174,7 +163,14 @@ async function checkUpdates(manual=false) {
 }
 $('check-updates').addEventListener('click',()=>checkUpdates(true));
 $('update-later').addEventListener('click',()=>$('update-dialog').close());
-$('update-download').addEventListener('click',async()=>{try{await invoke('downloadUpdate');$('update-dialog').close();toast('Download opened. Close SoundSwap and run Setup.exe. Your installed sounds and settings stay in place.');}catch(e){toast(e.message,true);}});
+$('update-dialog').addEventListener('cancel',e=>{if(state.updating)e.preventDefault();});
+$('update-download').addEventListener('click',async()=>{
+  if(state.busy || state.updating)return;
+  state.updating=true; $('update-download').disabled=true; $('update-later').disabled=true;
+  try { $('update-instructions').textContent='Downloading update…'; await invoke('downloadUpdate'); $('update-instructions').textContent='Verified. Restarting to finish the update…'; await invoke('installUpdate'); }
+  catch(e){state.updating=false; $('update-download').disabled=false; $('update-later').disabled=false; $('update-instructions').textContent=e.message;}
+});
+api?.onUpdateProgress?.(percent=>{$('update-instructions').textContent=`Downloading update… ${percent}%`;});
 setInterval(showPendingUpdate,1000);
 window.addEventListener('focus',()=>checkUpdates(false));
 boot();

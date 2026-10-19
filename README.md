@@ -1,10 +1,10 @@
 # sg0hann SoundSwap
 
-A Windows sound manager for selecting BuildTopia sounds in Creative Destruction. Compact weapon lists, real game artwork, individual sound switches, previews, backups and original restore. One installer manages the app and creates a desktop shortcut.
+A Windows sound manager for selecting BuildTopia sounds in Creative Destruction. Compact weapon lists, real game artwork, individual sound switches, backups and original restore. One installer manages the app and creates a desktop shortcut.
 
 ## Install and run
 
-1. Download **sg0hann-SoundSwap-1.3.0-Setup.exe** from Releases.
+1. Download **sg0hann-SoundSwap-1.4.0-Setup.exe** from Releases.
 2. Close any running SoundSwap window and run Setup.exe. It installs for your Windows account and creates a desktop and Start menu shortcut.
 3. Open SoundSwap, close Creative Destruction, browse to the game folder, select sounds and Apply.
 4. **Fully close SoundSwap after applying. The sounds stay installed and work without it running.**
@@ -13,13 +13,14 @@ Runtime files stay in the app’s installation directory. You do not need to ext
 
 ## Updates
 
-The app checks stable GitHub releases at startup and every four hours while running. Settings also has a manual check. The popup downloads Setup.exe; close SoundSwap and run it to update. Installation is manual. Version 1.1.0 users receive a compatibility ZIP containing just the installer and instructions. Sound selection works offline; a fully closed app cannot show popups.
+The app checks for stable GitHub releases at startup and every four hours. Click **Update & restart** to download the official installer, verify its SHA-256 checksum, update the existing installation silently, and relaunch SoundSwap. Settings and applied sounds are kept. Failed downloads leave the current app installed. Sound selection works offline.
+
+Users on 1.3 or earlier must run the 1.4 installer once to receive this updater. Later updates happen inside the app.
 
 ## What is included
 
-- Compact two-column weapon lists, a top toolbar, category filters, search and live selection count.
-- 65 catalog entries across weapons, vehicles, traps and related effects. One unavailable source entry (M82A3) stays disabled.
-- Actual decoded BuildTopia preview clips for 63 entries. Effects without source audio do not have a play button.
+- Compact two-column weapon lists, a dark green sidebar, category filters, search and live selection count.
+- 38 weapon and related-effect entries. One unavailable source entry (M82A3) stays disabled.
 - Individual choices for banks that have different source audio. Items whose audio is already identical are labelled and disabled, because switching them would make no audible change.
 - Checks before writing and immediately before committing the new archive. If the game is running or process status cannot be checked, Apply and Restore are blocked.
 - A first-install backup under the app's user-data folder, available from **Settings → Open backup folder**.
@@ -28,7 +29,7 @@ The app checks stable GitHub releases at startup and every four hours while runn
 - Existing supported v1–v4 packs and compatible app-generated selections can be detected.
 - Right-click any card to import a PNG, JPG or WebP item image. Images remain local to that PC.
 
-Matching cards use the **24 supplied game images**, including both pistol images on the shared 92F/P229 card. All images can be viewed in Settings. C111 remains unassigned until its sound bank is confirmed. Items without matching game artwork use a small neutral category icon. Generated placeholder artwork is no longer shown. Some special items retain source-bank labels until an exact in-game name is confirmed. The preview screenshot and generic illustrations do not determine sound routing: the supplied archive's bank IDs and metadata do.
+Matching cards use the **24 supplied game images**, including both pistol images on the shared 92F/P229 card. C111 remains unassigned until its sound bank is confirmed. Items without matching game artwork use a small neutral category icon. Generated placeholder artwork is no longer shown. Some special items retain source-bank labels until an exact in-game name is confirmed. The preview screenshot and generic illustrations do not determine sound routing: the supplied archive's bank IDs and metadata do.
 
 ## Known naming and source limits
 
@@ -41,15 +42,15 @@ Matching cards use the **24 supplied game images**, including both pistol images
 
 ## Test status
 
-The earlier merged weapon packs were tested in-game by the user. Badges preserve those reports, including working AK-47, SCAR, XM8, DTR, pump shotgun, Uzi, UMP9, AWP, VSS, VHS, pistol/revolver and M134 sounds. New vehicle and trap choices still need in-game testing.
+The earlier merged weapon packs were tested in-game by the user. Badges preserve those reports, including working AK-47, SCAR, XM8, DTR, pump shotgun, Uzi, UMP9, AWP, VSS, VHS, pistol/revolver and M134 sounds. Vehicle and trap choices have been removed.
 
-For this app build, automated engine tests cover selective resource changes, preserving unselected resources, AK-to-SCAR switching, exact original restore, first-backup preservation, corrupted/unknown archive rejection, running-game blocking and a game starting during a build. UI tests cover selection, search, filters, tabs, previews, apply/restore states and compact-window layout. Native Electron startup and the isolated preload/IPC bridge were checked on Linux. The **Windows executable, real Windows process enumeration and gameplay with selections still require a Windows test**.
+For this app build, automated engine tests cover selective resource changes, preserving unselected resources, AK-to-SCAR switching, exact original restore, first-backup preservation, corrupted/unknown archive rejection, running-game blocking and a game starting during a build. UI tests cover selection, search, filters, Weapons/Settings navigation, apply/restore states and compact-window layout. Native Electron startup and the isolated preload/IPC bridge were checked on Linux. Windows CI also checks silent installation, data retention and the real update-helper install/relaunch flow. Gameplay still needs user testing.
 
 This app does not edit the launcher, anti-cheat or game executable. It only changes the selected supported sound archive while the game is closed.
 
 ## Source build
 
-The repository includes prepared data and preview assets. Original archive parts are automatically reconstructed and SHA-256-verified by npm commands. You do not need to regenerate the catalog to build the app.
+The repository includes prepared sound data and weapon artwork. Original archive parts are automatically reconstructed and SHA-256-verified by npm commands. You do not need to regenerate the catalog to build the app.
 
 ```powershell
 npm install

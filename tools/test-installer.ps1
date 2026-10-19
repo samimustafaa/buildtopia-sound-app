@@ -25,3 +25,21 @@ if ((Get-Content $marker) -ne 'preserve-settings-and-backups') { throw 'Reinstal
 $desktop = Join-Path ([Environment]::GetFolderPath('Desktop')) 'sg0hann SoundSwap.lnk'
 if (!(Test-Path $desktop)) { throw 'Desktop shortcut is missing' }
 Write-Host 'Installer passed: one installation, desktop shortcut, repeat install keeps user data.'
+# Exercise the same detached helper used by Update & restart, with a real installer.
+$updateRoot = Join-Path $env:TEMP 'soundswap-update-smoke'
+New-Item -ItemType Directory -Force $updateRoot | Out-Null
+$configPath = Join-Path $updateRoot 'install.json'
+$waiting = Start-Process powershell.exe -ArgumentList '-NoProfile','-Command','Start-Sleep -Seconds 2' -PassThru -WindowStyle Hidden
+@{ installer=$setup; executable=$second; pid=$waiting.Id; sha256=(Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant() } | ConvertTo-Json | Set-Content $configPath
+$helper = (Resolve-Path 'app/update-install.ps1').Path
+$helperProcess = Start-Process powershell.exe -ArgumentList '-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',('"'+$helper+'"'),'-ConfigPath',('"'+$configPath+'"') -PassThru -Wait -WindowStyle Hidden
+if (Test-Path ($configPath+'.error.txt')) { throw (Get-Content ($configPath+'.error.txt') -Raw) }
+$relaunched = $false
+for ($attempt=0; $attempt -lt 30; $attempt++) {
+  if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $second }).Count -gt 0) { $relaunched=$true; break }
+  Start-Sleep -Seconds 1
+}
+if (!$relaunched) { throw 'The update helper did not relaunch SoundSwap.' }
+if ((Get-Content $marker) -ne 'preserve-settings-and-backups') { throw 'Update removed user data' }
+Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $second } | Stop-Process -Force
+Write-Host 'Update passed: waits for app exit, verifies installer, silently updates and relaunches, preserves data.'

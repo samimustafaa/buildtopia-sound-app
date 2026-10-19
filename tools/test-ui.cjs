@@ -38,7 +38,7 @@ const server = http.createServer(async (req, res) => {
       restore: async () => ({ ok: true, value: { selected: [], resources: 0 } }),
       checkUpdates: async () => ({ ok: true, value: window.__available ? { state: 'available', current: '1.1.0', version: '1.2.0', notes: '<script>unsafe</script> Test release' } : { state: 'current', current: '1.1.0' } }),
       downloadUpdate: async () => { window.__downloads = (window.__downloads || 0) + 1; return { ok: true, value: true }; },
-      onProgress: () => {}, openBackups: async () => ({ ok: true, value: true })
+      installUpdate: async()=>({ok:true,value:true}), onUpdateProgress:()=>{}, onProgress: () => {}, openBackups: async () => ({ ok: true, value: true })
     };
   });
   await page.reload(); await page.waitForSelector('.sound-card');
@@ -59,14 +59,9 @@ const server = http.createServer(async (req, res) => {
   assert((await page.locator('#connection-note').textContent()).includes('fully close SoundSwap'));
   await page.locator('#search').fill('AK-47'); assert.equal(await page.locator('.sound-card').count(), 1);
   await page.locator('#search').fill('');
-  await page.locator('[data-page="vehicles"]').click();
-  assert((await page.locator('.sound-card').count()) >= 10);
-  await page.locator('[data-page="traps"]').click();
-  assert((await page.locator('.sound-card').count()) >= 10);
+  assert.equal(await page.locator('[data-page="vehicles"], [data-page="traps"], [data-preview], audio').count(),0);
   await page.locator('[data-page="settings"]').click();
   assert(await page.locator('#settings').isVisible());
-  assert.equal(await page.locator('#included-images img').count(), 24);
-  assert((await page.locator('#included-images').textContent()).includes('mapping unconfirmed'));
   await page.locator('#check-updates').click();
   await page.waitForFunction(() => document.querySelector('#update-status').textContent.includes('up to date'));
   await page.evaluate(() => window.__available = true);
@@ -79,10 +74,8 @@ const server = http.createServer(async (req, res) => {
   await page.waitForSelector('#update-dialog[open]');
   await page.locator('#update-download').click();
   assert.equal(await page.evaluate(() => window.__downloads), 1);
+  await page.evaluate(()=>{document.querySelector('#update-dialog').close();});
   await page.locator('[data-page="weapons"]').click();
-  await page.locator('[data-preview="weapon_ak47"]').click();
-  await page.waitForFunction(() => document.querySelector('#audio').currentTime > 0);
-  await page.locator('[data-preview="weapon_ak47"]').click();
   await page.locator('[data-toggle="weapon_ak47"]').uncheck();
   await page.evaluate(() => window.__running = true);
   await page.waitForFunction(() => document.querySelector('#game-state').textContent.includes('Game running'), { timeout: 10000 });
@@ -102,6 +95,6 @@ const server = http.createServer(async (req, res) => {
   assert((await page.locator('#update-version').textContent()).includes('1.2.0'));
   await page.locator('#update-later').click();
   assert.deepEqual(errors, []);
-  console.log('UI checks passed: preview safety, folder selection, per-item toggles, apply, search, categories, tabs, real audio playback, running-game block, restore, compact layout, automatic update popup, manual checks, dismissal and download.');
+  console.log('UI checks passed: preview safety, folder selection, per-item toggles, apply, search, categories, weapons and settings, removed previews, running-game block, restore, compact layout, automatic update popup, manual checks, dismissal and download.');
   await browser.close(); server.close();
 })().catch(e => { console.error(e); server.close(); process.exit(1); });

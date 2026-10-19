@@ -1,18 +1,11 @@
-# sg0hann SoundSwap 1.3.0
+## SoundSwap 1.4.0
 
-## Desktop interface redesign
+- New light workspace with a dark green sidebar and compact weapon rows.
+- Removed audio previews, Traps and Vehicles from the app.
+- Shorter Settings with plain explanations.
+- Update & restart downloads and verifies the official installer, updates the existing installation silently, and relaunches SoundSwap. No browser download or manual reinstall for future updates.
+- Settings, backups and applied weapon sounds are preserved.
 
-- Replaced the large card grid and sidebar with a compact top toolbar and two-column weapon lists.
-- Flat charcoal surfaces, thin dividers and restrained selection highlights. Removed gradients, glowing borders and badge pills.
-- Small real game images, clear names, inline test status and Original / BuildTopia switches.
-- Removed generated placeholder weapon imagery. Items without a matching game image use a neutral category icon.
-- Smaller folder controls, quieter warnings and a fixed Apply changes bar.
-- Updated Settings, dialogs and update popup to match.
+**Upgrading from 1.3 or earlier:** close SoundSwap and run this Setup.exe once to get the new updater. Future updates install from inside the app.
 
-Download **sg0hann-SoundSwap-1.3.0-Setup.exe**. Close SoundSwap and run the installer. It updates the existing installation and keeps settings, custom images and backups. You can delete the old extracted portable SoundSwap folder after installing.
-
-**After applying sounds, fully close SoundSwap. Your sounds stay installed and keep working.** Sound selection, archive validation and backups behave as before.
-
-The compatibility ZIP is for the older 1.1 updater and contains the same Setup.exe.
-
-Made by **sg0hann**.
+Close the game before applying sounds. After applying, you can fully close SoundSwap; your sounds stay installed. If you previously selected vehicle or trap sounds, click Apply changes once to return those to their originals.

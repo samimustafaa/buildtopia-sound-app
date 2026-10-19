@@ -2,7 +2,7 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs/promises');
-const { execFile } = require('node:child_process');
+const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 const { pathToFileURL } = require('node:url');
 const { SoundEngine } = require('./engine.cjs');
@@ -52,9 +52,24 @@ else app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.res
 app.whenReady().then(async () => {
   const updater = new UpdateChecker(app.getVersion());
   handle('check-updates', async force => updater.check(force === true));
-  handle('download-update', async () => updater.open(url => shell.openExternal(url)));
+  let restarting=false;
+  handle('download-update', async () => {
+    if(engine.busy) throw Error('Wait for sounds to finish saving.');
+    if(process.platform!=='win32' || !app.isPackaged) throw Error('Updates require the installed Windows app.');
+    return updater.download(path.join(app.getPath('userData'),'updates'),percent=>win.webContents.send('update-progress',percent));
+  });
+  handle('install-update',async()=>{
+    if(engine.busy || updater.downloading || !updater.ready || restarting) throw Error('The update is not ready.');
+    const root=path.join(app.getPath('userData'),'updates');
+    const helper=path.join(root,'install.ps1'), config=path.join(root,'install.json');
+    await fs.copyFile(path.join(__dirname,'update-install.ps1'),helper);
+    await fs.writeFile(config,JSON.stringify({...updater.ready,pid:process.pid,executable:process.execPath}));
+    const child=spawn('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',helper,'-ConfigPath',config],{detached:true,stdio:'ignore',windowsHide:true});
+    await new Promise((resolve,reject)=>{child.once('spawn',resolve);child.once('error',reject);});
+    child.unref();restarting=true;setTimeout(()=>app.quit(),150);return true;
+  });
   engine = new SoundEngine(path.join(__dirname, 'data'), app.getPath('userData'), gameStatus);
-  win = new BrowserWindow({ width: 1380, height: 930, minWidth: 920, minHeight: 680, backgroundColor: '#11151a', title: 'sg0hann SoundSwap', icon: path.join(__dirname, 'assets/app.png'), autoHideMenuBar: true, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true } });
+  win = new BrowserWindow({ width: 1380, height: 930, minWidth: 920, minHeight: 680, backgroundColor: '#f4f5f3', title: 'sg0hann SoundSwap', icon: path.join(__dirname, 'assets/app.png'), autoHideMenuBar: true, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true } });
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', event => event.preventDefault());
   win.webContents.on('will-attach-webview', event => event.preventDefault());
@@ -62,8 +77,9 @@ app.whenReady().then(async () => {
     const { catalog } = await engine.load(); const settings = await engine.settings();
     let connection = null;
     if (settings.folder) { try { connection = await engine.inspect(settings.folder); folder = connection.folder; } catch {} }
+    if(connection) connection.removedExtras=connection.selections.some(id=>catalog.some(x=>x.id===id && x.section!=='weapons'));
     status = await gameStatus(folder);
-    return { catalog, images: await images(catalog), connection, status, version: app.getVersion(), windows: process.platform === 'win32' };
+    return { catalog: catalog.filter(x=>x.section==='weapons').map(({preview,...item})=>item), images: await images(catalog), connection, status, version: app.getVersion(), windows: process.platform === 'win32' };
   });
   handle('choose-folder', async () => {
     const result = await dialog.showOpenDialog(win, { title: 'Choose Creative Destruction', defaultPath: folder || 'C:\\Creative Destruction', properties: ['openDirectory'] });
@@ -73,15 +89,16 @@ app.whenReady().then(async () => {
     if (engine.busy) throw new Error('Wait for the current update to finish.');
     const info = await engine.inspect(input); folder = info.folder;
     const settings = await engine.settings(); settings.folder = folder; await engine.saveSettings(settings);
-    status = await gameStatus(folder); return { connection: info, status };
+    const {catalog}=await engine.load(); info.removedExtras=info.selections.some(id=>catalog.some(x=>x.id===id && x.section!=='weapons')); status = await gameStatus(folder); return { connection: info, status };
   });
   handle('status', async () => {
     if (!polling) { polling = true; try { status = await gameStatus(folder); } finally { polling = false; } }
     return status;
   });
   const progress = text => { if (!win.isDestroyed()) win.webContents.send('progress', text); };
-  handle('apply', async ids => engine.install(folder, ids, progress));
+  handle('apply', async ids => { if(updater.downloading || restarting) throw Error('Wait for the app update.'); const {catalog}=await engine.load(); if(!Array.isArray(ids) || ids.some(id=>!catalog.some(x=>x.id===id && x.section==='weapons'))) throw Error('Choose weapons only.'); return engine.install(folder, ids, progress); });
   handle('restore', async () => {
+    if(updater.downloading || restarting) throw Error('Wait for the app update.');
     const result = await dialog.showMessageBox(win, { type: 'question', title: 'Restore original sounds', message: 'Restore the original Creative Destruction sounds?', detail: 'This removes all sound selections. Your first-install backup will remain available.', buttons: ['Cancel', 'Restore original'], defaultId: 0, cancelId: 0 });
     return result.response === 1 ? engine.install(folder, [], progress) : null;
   });
@@ -103,7 +120,7 @@ app.whenReady().then(async () => {
     await fs.writeFile(path.join(dir, id + '.' + ext), data);
     return 'data:image/' + (ext === 'jpg' ? 'jpeg' : ext) + ';base64,' + data.toString('base64');
   });
-  win.on('close', event => { if (engine.busy) { event.preventDefault(); dialog.showMessageBox(win, { message: 'Please wait for the sound update to finish.' }); } });
+  win.on('close', event => { if (engine.busy || updater.downloading) { event.preventDefault(); dialog.showMessageBox(win, { message: 'Please wait for the sound update to finish.' }); } });
   win.loadFile(path.join(__dirname, 'index.html'));
 });
 app.on('window-all-closed', () => app.quit());
