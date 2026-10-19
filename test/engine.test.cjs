@@ -62,7 +62,7 @@ test('changing AK to SCAR resets AK, preserves first backup, and restore is exac
     info = await instance.inspect(game); assert.deepEqual(info.selections, ['weapon_scar']);
     await instance.install(game, []);
     assert.equal(hash(await fs.readFile(target)), source.manifest.originalSha256);
-    const settings = await instance.settings(); const record = settings.games[instance.gameId(game)];
+    const settings = await instance.settings(); const record = settings.games[instance.gameId(info.folder)];
     assert.equal(hash(await fs.readFile(record.backup)), source.manifest.originalSha256);
   });
 });
