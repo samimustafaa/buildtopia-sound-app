@@ -1,0 +1,24 @@
+{
+  "name": "sg0hann-soundswap",
+  "version": "1.1.0",
+  "description": "Selective BuildTopia sound packs for Creative Destruction",
+  "main": "app/main.cjs",
+  "author": "sg0hann",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.cjs",
+    "package:win": "node tools/package-win.cjs",
+    "prestart": "node tools/restore-data.cjs",
+    "pretest": "node tools/restore-data.cjs",
+    "prepackage:win": "node tools/restore-data.cjs"
+  },
+  "devDependencies": {
+    "@electron/packager": "20.3.0",
+    "electron": "44.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samimustafaa/buildtopia-sound-app.git"
+  }
+}
