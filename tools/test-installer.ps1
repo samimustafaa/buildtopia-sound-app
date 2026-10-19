@@ -6,7 +6,10 @@ function Install-SoundSwap {
   if ($process.ExitCode -ne 0) { throw "Installer failed: $($process.ExitCode)" }
   $entries = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -like 'sg0hann SoundSwap*' })
   if ($entries.Count -ne 1) { throw "Expected one per-user installation, found $($entries.Count)" }
-  $exe = Join-Path $entries[0].InstallLocation 'sg0hann SoundSwap.exe'
+  $shortcut = Join-Path ([Environment]::GetFolderPath('Desktop')) 'sg0hann SoundSwap.lnk'
+  if (!(Test-Path $shortcut)) { throw 'Desktop shortcut is missing' }
+  $shell = New-Object -ComObject WScript.Shell
+  $exe = $shell.CreateShortcut($shortcut).TargetPath
   if (!(Test-Path $exe)) { throw 'Installed executable is missing' }
   Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exe } | Stop-Process -Force
   return $exe
