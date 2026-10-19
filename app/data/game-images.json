@@ -120,7 +120,7 @@
     "assigned": true
   },
   {
-    "name": "Throwable",
+    "name": "Frag Grenade",
     "src": "assets/weapons/Throwable_shoulei_ea51f36.png",
     "bounds": [
       126,
@@ -195,7 +195,7 @@
     "assigned": true
   },
   {
-    "name": "Shotgun",
+    "name": "S1897",
     "src": "assets/weapons/Shotgun_S1897_dd81f9e.png",
     "bounds": [
       6,
