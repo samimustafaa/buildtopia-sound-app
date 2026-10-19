@@ -32,7 +32,8 @@ $configPath = Join-Path $updateRoot 'install.json'
 $waiting = Start-Process powershell.exe -ArgumentList '-NoProfile','-Command','Start-Sleep -Seconds 2' -PassThru -WindowStyle Hidden
 @{ installer=$setup; executable=$second; pid=$waiting.Id; sha256=(Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant() } | ConvertTo-Json | Set-Content $configPath
 $helper = (Resolve-Path 'app/update-install.ps1').Path
-$helperProcess = Start-Process powershell.exe -ArgumentList '-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',('"'+$helper+'"'),'-ConfigPath',('"'+$configPath+'"') -PassThru -Wait -WindowStyle Hidden
+$helperProcess = Start-Process powershell.exe -ArgumentList '-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',('"'+$helper+'"'),'-ConfigPath',('"'+$configPath+'"') -PassThru -WindowStyle Hidden
+if (!$helperProcess.WaitForExit(180000)) { throw 'Update helper did not exit within three minutes.' }
 if (Test-Path ($configPath+'.error.txt')) { throw (Get-Content ($configPath+'.error.txt') -Raw) }
 $relaunched = $false
 for ($attempt=0; $attempt -lt 30; $attempt++) {
