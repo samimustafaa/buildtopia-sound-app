@@ -1,10 +1,10 @@
 # sg0hann SoundSwap
 
-A Windows desktop app with a single-file installer for selecting BuildTopia sounds for the supported Creative Destruction sound archive. It follows the selected dark amber design, with compact weapon cards, a folder picker, sound previews, original-file restore and automatic backups.
+A Windows sound manager for selecting BuildTopia sounds in Creative Destruction. Compact weapon lists, real game artwork, individual sound switches, previews, backups and original restore. One installer manages the app and creates a desktop shortcut.
 
 ## Install and run
 
-1. Download **sg0hann-SoundSwap-1.2.0-Setup.exe** from Releases.
+1. Download **sg0hann-SoundSwap-1.3.0-Setup.exe** from Releases.
 2. Close any running SoundSwap window and run Setup.exe. It installs for your Windows account and creates a desktop and Start menu shortcut.
 3. Open SoundSwap, close Creative Destruction, browse to the game folder, select sounds and Apply.
 4. **Fully close SoundSwap after applying. The sounds stay installed and work without it running.**
@@ -17,7 +17,7 @@ The app checks stable GitHub releases at startup and every four hours while runn
 
 ## What is included
 
-- Dark amber desktop interface with smaller weapon illustrations, tabs, category filters, search and live selection count.
+- Compact two-column weapon lists, a top toolbar, category filters, search and live selection count.
 - 65 catalog entries across weapons, vehicles, traps and related effects. One unavailable source entry (M82A3) stays disabled.
 - Actual decoded BuildTopia preview clips for 63 entries. Effects without source audio do not have a play button.
 - Individual choices for banks that have different source audio. Items whose audio is already identical are labelled and disabled, because switching them would make no audible change.
@@ -28,7 +28,7 @@ The app checks stable GitHub releases at startup and every four hours while runn
 - Existing supported v1–v4 packs and compatible app-generated selections can be detected.
 - Right-click any card to import a PNG, JPG or WebP item image. Images remain local to that PC.
 
-Matching cards use the **24 supplied game images**, including both pistol images on the shared 92F/P229 card. All images can be viewed in Settings. C111 remains unassigned until its sound bank is confirmed. Cards without supplied matching artwork keep their previous placeholders. Some special items retain source-bank labels until an exact in-game name is confirmed. The preview screenshot and generic illustrations do not determine sound routing: the supplied archive's bank IDs and metadata do.
+Matching cards use the **24 supplied game images**, including both pistol images on the shared 92F/P229 card. All images can be viewed in Settings. C111 remains unassigned until its sound bank is confirmed. Items without matching game artwork use a small neutral category icon. Generated placeholder artwork is no longer shown. Some special items retain source-bank labels until an exact in-game name is confirmed. The preview screenshot and generic illustrations do not determine sound routing: the supplied archive's bank IDs and metadata do.
 
 ## Known naming and source limits
 

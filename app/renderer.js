@@ -2,7 +2,6 @@
 const $ = id => document.getElementById(id);
 const state = { catalog: [], images: {}, page: 'weapons', filter: 'All', query: '', selected: new Set(), applied: new Set(), connection: null, status: { state: 'disconnected' }, busy: false, playing: null, windows: true };
 const api = window.soundSwap;
-const sprite = { ak47: [500, 440], scar: [795, 440], xm8: [1095, 440], dtr: [1395, 440], awp: [500, 600], ump9: [795, 600], m134: [1095, 600], p229: [1395, 600], '92f': [500, 765], m1915: [795, 765], uzi: [1095, 765], vss: [1395, 765] };
 const escapeHtml = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 let toastTimer;
 function toast(text, error = false) { $('toast').textContent = text; $('toast').classList.toggle('error', error); $('toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').hidden = true, error ? 11000 : 5000); }
@@ -38,18 +37,18 @@ function renderFilters() {
 function renderCards() {
   const items = filtered();
   $('result-count').textContent = `${items.length} of ${state.catalog.filter(x => x.section === state.page).length} sounds`;
+  document.querySelector('.list-head').hidden = !items.length;
   $('empty').hidden = Boolean(items.length); $('cards').hidden = !items.length;
   $('cards').innerHTML = items.map(item => {
     const selected = state.selected.has(item.id), disabled = !selectable(item) || state.busy;
-    const label = !item.available ? 'Not in source archive' : !item.differentAudio ? 'Already identical' : 'Use BuildTopia sound';
-    const badge = !item.available ? '<span class="badge same">Unavailable</span>' : !item.differentAudio ? '<span class="badge same">Same audio</span>' : item.tested ? '<span class="badge">Tested in v3</span>' : '<span class="badge untested">Needs testing</span>';
-    const point = sprite[item.art], custom = state.images[item.id];
+    const label = !item.available ? 'Unavailable' : !item.differentAudio ? 'Same audio' : selected ? 'BuildTopia' : 'Original';
+    const status = !item.available ? 'No source bank' : !item.differentAudio ? 'Identical audio' : item.tested ? 'Tested' : 'Not tested';
+    const custom = state.images[item.id];
     let art;
     if (custom) art = '<div class="card-art custom"><img alt="" data-custom-image="' + item.id + '"></div>';
-    else if (item.gameImages?.length) art = '<div class="card-art game-art">' + item.gameImages.map((image, index) => { const [x,y,right,bottom] = image.bounds; const cell = 190 / item.gameImages.length, scale = Math.min((cell-12)/(right-x), 50/(bottom-y)); return `<span class="game-image-cell" style="width:${cell}px"><img src="${escapeHtml(image.src)}" alt="${escapeHtml(item.name)} game artwork" style="width:${image.size[0]*scale}px;height:${image.size[1]*scale}px;left:${(cell-(right-x)*scale)/2-x*scale}px;top:${(54-(bottom-y)*scale)/2-y*scale}px"></span>`; }).join('') + '</div>';
-    else if (point) art = `<div class="card-art" style="background-position:${95 - point[0] * .85}px ${27 - point[1] * .85}px" aria-hidden="true"></div>`;
+    else if (item.gameImages?.length) art = '<div class="card-art game-art">' + item.gameImages.map((image, index) => { const [x,y,right,bottom] = image.bounds; const cell = 110 / item.gameImages.length, scale = Math.min((cell-8)/(right-x), 34/(bottom-y)); return `<span class="game-image-cell" style="width:${cell}px"><img src="${escapeHtml(image.src)}" alt="${escapeHtml(item.name)} game artwork" style="width:${image.size[0]*scale}px;height:${image.size[1]*scale}px;left:${(cell-(right-x)*scale)/2-x*scale}px;top:${(44-(bottom-y)*scale)/2-y*scale}px"></span>`; }).join('') + '</div>';
     else art = `<div class="card-art placeholder-icon" aria-hidden="true"><svg><use href="#i-${item.section === 'vehicles' ? 'car' : item.section === 'traps' ? 'trap' : 'weapon'}"/></svg></div>`;
-    return `<article class="sound-card ${selected ? 'selected' : ''} ${!item.available ? 'unavailable' : ''}" data-id="${item.id}" title="${escapeHtml(item.note || 'Right-click to add your own item image')}"><div class="card-heading"><h2>${escapeHtml(item.name)}</h2><button class="preview ${state.playing === item.id ? 'playing' : ''}" data-preview="${item.id}" aria-label="Preview ${escapeHtml(item.name)} BuildTopia sound" title="${item.preview ? 'Preview BuildTopia sound' : 'No playable sample available'}" ${!item.preview ? 'disabled' : ''}><svg><use href="#i-play"/></svg></button></div>${art}<label class="card-toggle"><input type="checkbox" data-toggle="${item.id}" aria-label="Use BuildTopia sound for ${escapeHtml(item.name)}" ${selected ? 'checked' : ''} ${disabled ? 'disabled' : ''}><span>${label}</span></label><div class="card-meta">${badge}${item.linked.length ? '<span>Linked selection</span>' : ''}${item.note ? `<button data-info="${item.id}" aria-label="Details for ${escapeHtml(item.name)}"><svg><use href="#i-info"/></svg></button>` : ''}</div></article>`;
+    return `<article class="sound-card ${selected ? 'selected' : ''} ${!item.available ? 'unavailable' : ''}" data-id="${item.id}" title="${escapeHtml(item.note || 'Right-click to change image')}">${art}<div class="sound-details"><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.category)}<span class="detail-dot">·</span><span class="test-status ${item.tested ? 'tested' : ''}">${status}</span></p></div><div class="sound-actions"><button class="preview ${state.playing === item.id ? 'playing' : ''}" data-preview="${item.id}" aria-label="Preview ${escapeHtml(item.name)} BuildTopia sound" title="${item.preview ? 'Listen to BuildTopia sound' : 'No preview available'}" ${!item.preview ? 'disabled' : ''}><svg><use href="#i-play"/></svg></button><label class="card-toggle"><input type="checkbox" data-toggle="${item.id}" aria-label="Use BuildTopia sound for ${escapeHtml(item.name)}" ${selected ? 'checked' : ''} ${disabled ? 'disabled' : ''}><span>${label}</span></label>${item.note ? `<button class="item-info" data-info="${item.id}" aria-label="Details for ${escapeHtml(item.name)}"><svg><use href="#i-info"/></svg></button>` : '<span class="info-spacer"></span>'}</div></article>`;
   }).join('');
   document.querySelectorAll('[data-custom-image]').forEach(img => { img.src = state.images[img.dataset.customImage]; img.onerror = () => { img.style.display = 'none'; }; });
   updateFooter();
@@ -70,7 +69,7 @@ function setPage(page) {
   document.querySelectorAll('[data-page]').forEach(button => button.classList.toggle('active', button.dataset.page === page));
   $('library').hidden = page === 'settings'; $('settings').hidden = page !== 'settings';
   if (page !== 'settings') {
-    $('page-heading').textContent = page === 'weapons' ? 'Choose your sounds' : page === 'vehicles' ? 'Choose your vehicle sounds' : 'Choose your trap sounds';
+    $('page-heading').textContent = page === 'weapons' ? 'Weapons' : page === 'vehicles' ? 'Vehicles' : 'Traps';
     $('search').placeholder = `Search ${page}…`; renderFilters(); renderCards(); $('library').scrollTop = 0;
   }
 }

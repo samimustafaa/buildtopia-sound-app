@@ -51,7 +51,7 @@ const server = http.createServer(async (req, res) => {
   const twelfth = await page.locator('.sound-card').nth(11).boundingBox();
   const footer = await page.locator('footer').boundingBox();
   assert(twelfth.y + twelfth.height <= footer.y + 2, 'The first 12 compact cards should fit above the footer: ' + JSON.stringify({twelfth,footer}));
-  await page.screenshot({ path: path.join(__dirname, '../screenshots/app-dark-amber.png'), animations: 'disabled' });
+  await page.screenshot({ path: path.join(__dirname, '../screenshots/app-compact-desktop.png'), animations: 'disabled' });
   await page.locator('#apply').click();
   await page.waitForFunction(() => document.querySelector('#progress-overlay').hidden);
   assert.equal(await page.evaluate(() => window.__calls.length), 1);
