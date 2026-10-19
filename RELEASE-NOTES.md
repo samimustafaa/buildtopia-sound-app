@@ -1,11 +1,9 @@
-## SoundSwap 1.4.0
+## SoundSwap 1.4.1
 
-- New light workspace with a dark green sidebar and compact weapon rows.
-- Removed audio previews, Traps and Vehicles from the app.
-- Shorter Settings with plain explanations.
-- Update & restart downloads and verifies the official installer, updates the existing installation silently, and relaunches SoundSwap. No browser download or manual reinstall for future updates.
-- Settings, backups and applied weapon sounds are preserved.
+- Uses the supplied dark violet Grabient background.
+- Lightweight button hover transitions and short page fades. Reduced-motion preferences are respected.
+- Clearer Restore all CD sounds control: the full original Creative Destruction wwise.npk is included, restoring every original sound without reinstalling the game.
+- Lower background activity: no repeating popup timer, and game-process polling pauses while the app is hidden.
+- In-app Update & restart preserves settings and applied sounds.
 
-**Upgrading from 1.3 or earlier:** close SoundSwap and run this Setup.exe once to get the new updater. Future updates install from inside the app.
-
-Close the game before applying sounds. After applying, you can fully close SoundSwap; your sounds stay installed. If you previously selected vehicle or trap sounds, click Apply changes once to return those to their originals.
+Close the game before applying or restoring sounds. After applying, fully close SoundSwap; your selected sounds stay installed.

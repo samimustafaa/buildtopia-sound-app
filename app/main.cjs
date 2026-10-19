@@ -69,7 +69,7 @@ app.whenReady().then(async () => {
     child.unref();restarting=true;setTimeout(()=>app.quit(),150);return true;
   });
   engine = new SoundEngine(path.join(__dirname, 'data'), app.getPath('userData'), gameStatus);
-  win = new BrowserWindow({ width: 1380, height: 930, minWidth: 920, minHeight: 680, backgroundColor: '#f4f5f3', title: 'sg0hann SoundSwap', icon: path.join(__dirname, 'assets/app.png'), autoHideMenuBar: true, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true } });
+  win = new BrowserWindow({ width: 1380, height: 930, minWidth: 920, minHeight: 680, backgroundColor: '#201c2b', title: 'sg0hann SoundSwap', icon: path.join(__dirname, 'assets/app.png'), autoHideMenuBar: true, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true } });
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', event => event.preventDefault());
   win.webContents.on('will-attach-webview', event => event.preventDefault());
@@ -99,7 +99,7 @@ app.whenReady().then(async () => {
   handle('apply', async ids => { if(updater.downloading || restarting) throw Error('Wait for the app update.'); const {catalog}=await engine.load(); if(!Array.isArray(ids) || ids.some(id=>!catalog.some(x=>x.id===id && x.section==='weapons'))) throw Error('Choose weapons only.'); return engine.install(folder, ids, progress); });
   handle('restore', async () => {
     if(updater.downloading || restarting) throw Error('Wait for the app update.');
-    const result = await dialog.showMessageBox(win, { type: 'question', title: 'Restore original sounds', message: 'Restore the original Creative Destruction sounds?', detail: 'This removes all sound selections. Your first-install backup will remain available.', buttons: ['Cancel', 'Restore original'], defaultId: 0, cancelId: 0 });
+    const result = await dialog.showMessageBox(win, { type: 'question', title: 'Restore original sounds', message: 'Restore the original Creative Destruction sounds?', detail: 'The included original wwise.npk restores ALL Creative Destruction sounds. No game reinstall needed. Your backup is kept.', buttons: ['Cancel', 'Restore original'], defaultId: 0, cancelId: 0 });
     return result.response === 1 ? engine.install(folder, [], progress) : null;
   });
   handle('open-backups', async () => {

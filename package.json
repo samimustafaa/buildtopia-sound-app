@@ -1,6 +1,6 @@
 {
   "name": "sg0hann-soundswap",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Selective BuildTopia sound packs for Creative Destruction",
   "main": "app/main.cjs",
   "author": "sg0hann",

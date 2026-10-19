@@ -99,7 +99,7 @@ async function install(restore = false) {
       $('connection-note').textContent = `Connected · ${result.resources} sound resources installed · backup kept. You can fully close SoundSwap; sounds stay installed.`;
     }
   } catch (e) { toast(e.message, true); }
-  finally { state.busy = false; $('progress-overlay').hidden = true; renderCards(); updateFooter(); }
+  finally { state.busy = false; $('progress-overlay').hidden = true; renderCards(); updateFooter(); showPendingUpdate(); }
 }
 document.querySelectorAll('[data-page]').forEach(button => button.addEventListener('click', () => setPage(button.dataset.page)));
 $('filters').addEventListener('click', e => { const button = e.target.closest('[data-filter]'); if (!button) return; state.filter = button.dataset.filter; renderFilters(); renderCards(); });
@@ -136,7 +136,7 @@ async function boot() {
     if (api && !result.windows) toast('This build can preview the interface here. Applying sounds requires Windows.');
     if (api?.checkUpdates) { setTimeout(() => checkUpdates(false), 2000); setInterval(() => checkUpdates(false), 4*60*60*1000); }
     api?.onProgress(text => $('progress-label').textContent = text);
-    if (api) setInterval(async () => { if (state.busy || !state.connection) return; try { state.status = await invoke('status'); updateStatus(); } catch { state.status = { state: 'unknown' }; updateStatus(); } }, 3500);
+    if (api) setInterval(async () => { if (document.hidden || state.busy || !state.connection) return; try { state.status = await invoke('status'); updateStatus(); } catch { state.status = { state: 'unknown' }; updateStatus(); } }, 6000);
   } catch (e) { $('result-count').textContent = 'Sound library could not be loaded.'; toast(e.message, true); }
 }
 let updateChecking=false, pendingUpdate=null, promptedVersion=null;
@@ -171,6 +171,6 @@ $('update-download').addEventListener('click',async()=>{
   catch(e){state.updating=false; $('update-download').disabled=false; $('update-later').disabled=false; $('update-instructions').textContent=e.message;}
 });
 api?.onUpdateProgress?.(percent=>{$('update-instructions').textContent=`Downloading update… ${percent}%`;});
-setInterval(showPendingUpdate,1000);
+for(const id of ['info-dialog','update-dialog']) $(id).addEventListener('close',showPendingUpdate);
 window.addEventListener('focus',()=>checkUpdates(false));
 boot();

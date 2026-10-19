@@ -4,12 +4,14 @@ A Windows sound manager for selecting BuildTopia sounds in Creative Destruction.
 
 ## Install and run
 
-1. Download **sg0hann-SoundSwap-1.4.0-Setup.exe** from Releases.
+1. Download **sg0hann-SoundSwap-1.4.1-Setup.exe** from Releases.
 2. Close any running SoundSwap window and run Setup.exe. It installs for your Windows account and creates a desktop and Start menu shortcut.
 3. Open SoundSwap, close Creative Destruction, browse to the game folder, select sounds and Apply.
 4. **Fully close SoundSwap after applying. The sounds stay installed and work without it running.**
 
 Runtime files stay in the app’s installation directory. You do not need to extract or manage a portable folder. Later installers update the same installation and preserve settings, custom images and backups. Uninstall through Windows Settings → Apps. Removing SoundSwap does not restore game sounds; use Restore original first if desired.
+
+The full original Creative Destruction `wwise.npk` is bundled and hash-verified. **Restore all CD sounds** replaces the sound archive with those exact original bytes; no game reinstall is needed.
 
 ## Updates
 
@@ -19,7 +21,7 @@ Users on 1.3 or earlier must run the 1.4 installer once to receive this updater.
 
 ## What is included
 
-- Compact two-column weapon lists, a dark green sidebar, category filters, search and live selection count.
+- The supplied Grabient background, lightweight control transitions, compact two-column weapon lists, a dark violet sidebar, category filters, search and live selection count.
 - 38 weapon and related-effect entries. One unavailable source entry (M82A3) stays disabled.
 - Individual choices for banks that have different source audio. Items whose audio is already identical are labelled and disabled, because switching them would make no audible change.
 - Checks before writing and immediately before committing the new archive. If the game is running or process status cannot be checked, Apply and Restore are blocked.
