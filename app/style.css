@@ -10,3 +10,7 @@
 
 .close-app-note{color:#b6c5bb;font-size:11px;line-height:1.5;margin-top:6px}.connection{padding-top:20px;padding-bottom:10px}.library{padding-top:18px}.catalog-tools{margin-top:14px}
 #update-dialog{width:min(540px,calc(100vw - 48px));max-height:80vh;overflow:auto}#update-dialog p{color:#abb7c2;line-height:1.6}#update-notes{white-space:pre-wrap;overflow-wrap:anywhere;max-height:220px;overflow:auto;font-family:inherit;font-size:12px;line-height:1.6;padding:14px;background:#11161c;border-radius:8px}.update-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+
+.card-art.game-art{background:none;display:flex;position:relative;height:54px;overflow:hidden;mix-blend-mode:normal}.game-image-cell{height:54px;overflow:hidden;position:relative;display:block}.game-image-cell img{position:absolute;max-width:none;object-fit:contain}.included-images{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}.included-images figure{margin:0;padding:8px;background:#141a20;border-radius:8px}.included-images img{width:100%;height:100px;object-fit:contain}.included-images figcaption{font-size:11px;color:#aab7c4}
+
+.game-image-cell img{max-height:none}

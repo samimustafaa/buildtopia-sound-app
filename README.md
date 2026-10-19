@@ -1,25 +1,19 @@
 # sg0hann SoundSwap
 
-A portable Windows desktop app for selecting BuildTopia sounds for the supported Creative Destruction sound archive. It follows the selected dark amber design, with compact weapon cards, a folder picker, sound previews, original-file restore and automatic backups.
+A Windows desktop app with a single-file installer for selecting BuildTopia sounds for the supported Creative Destruction sound archive. It follows the selected dark amber design, with compact weapon cards, a folder picker, sound previews, original-file restore and automatic backups.
 
-## Run the Windows app
+## Install and run
 
-1. Extract **the entire Windows ZIP** into its own folder. Keep all files together.
-2. Close Creative Destruction.
-3. Open `sg0hann SoundSwap.exe`.
-4. Click **Browse**, then select your Creative Destruction folder. The app expects `res\wwise.npk` inside it. You can also paste the path and click **Connect**.
-5. Check only the sounds you want from BuildTopia. Use the play buttons to preview actual clips.
-6. Click **Apply selected sounds**, wait for completion, and launch the game normally with your usual launcher and anti-cheat settings.
+1. Download **sg0hann-SoundSwap-1.2.0-Setup.exe** from Releases.
+2. Close any running SoundSwap window and run Setup.exe. It installs for your Windows account and creates a desktop and Start menu shortcut.
+3. Open SoundSwap, close Creative Destruction, browse to the game folder, select sounds and Apply.
+4. **Fully close SoundSwap after applying. The sounds stay installed and work without it running.**
 
-Unchecked sounds use the bundled supported **original Creative Destruction** resources, even when your current installation already has a v1–v4 sound pack. To remove a sound, uncheck it and click Apply again. **Restore original** restores the exact supported original archive.
+Runtime files stay in the app’s installation directory. You do not need to extract or manage a portable folder. Later installers update the same installation and preserve settings, custom images and backups. Uninstall through Windows Settings → Apps. Removing SoundSwap does not restore game sounds; use Restore original first if desired.
 
-The executable is a portable Windows x64 build. The Windows build is not code-signed. No Python, Node.js or separate runtime install is required to use the packaged app.
+## Updates
 
-## Updates and closing the app
-
-**After applying sounds, fully close SoundSwap. Your sounds remain installed in the game and work without this app running.**
-
-Version 1.1.0 checks GitHub for updates at startup and every four hours while running. A popup offers the newer Windows ZIP. Settings has a manual Check for updates button. Download the ZIP, close SoundSwap, extract the entire new ZIP into a new folder, and open its EXE. Your game sounds, backups and preferences stay in place. Updates are not installed automatically. Install 1.1.0 once to enable future notifications; 1.0.0 has no update checker. Sound selection works offline. A fully closed app cannot show update popups.
+The app checks stable GitHub releases at startup and every four hours while running. Settings also has a manual check. The popup downloads Setup.exe; close SoundSwap and run it to update. Installation is manual. Version 1.1.0 users receive a compatibility ZIP containing just the installer and instructions. Sound selection works offline; a fully closed app cannot show popups.
 
 ## What is included
 
@@ -34,13 +28,13 @@ Version 1.1.0 checks GitHub for updates at startup and every four hours while ru
 - Existing supported v1–v4 packs and compatible app-generated selections can be detected.
 - Right-click any card to import a PNG, JPG or WebP item image. Images remain local to that PC.
 
-The current artwork is **placeholder imagery from the approved design preview**, not extracted Creative Destruction artwork. Some special items retain source-bank labels until an exact in-game name is confirmed. The preview screenshot and generic illustrations do not determine sound routing: the supplied archive's bank IDs and metadata do.
+Matching cards use the **24 supplied game images**, including both pistol images on the shared 92F/P229 card. All images can be viewed in Settings. C111 remains unassigned until its sound bank is confirmed. Cards without supplied matching artwork keep their previous placeholders. Some special items retain source-bank labels until an exact in-game name is confirmed. The preview screenshot and generic illustrations do not determine sound routing: the supplied archive's bank IDs and metadata do.
 
 ## Known naming and source limits
 
 - DTR is routed to `weapon_tsg`, UMP9 to `weapon_tsmg`, and Uzi to `weapon_smg`, based on the source clip names.
 - **92F / P229** is a single pistol-bank selection. Their exact independent in-game routing has not been verified, so the app does not pretend they can be changed separately.
-- **M1915 / Pump** follows the user's name for the pump weapon; the source filenames use `s1897`. Its info button explains this.
+- **S1897 / Pump** follows the supplied game image and source filenames. Earlier testing called it M1915; sound routing is unchanged.
 - M82A3 has no matching donor bank. It is unavailable.
 - “Coke propeller” has not been identified and is not claimed as an available option.
 - The supported pristine original archive is 127,929,852 bytes, SHA-256 `32807ac089ead7068ddc2820759198964434069661ffbe2cd22c1149956df71b`. Other game builds are refused rather than overwritten.
@@ -62,6 +56,7 @@ npm install
 npm test
 npm start
 npm run package:win
+npm run installer:win
 ```
 
 Use Node.js 22.12+ or 24+. The package versions are pinned in `package-lock.json`. `npm run package:win` writes the portable app directory under `dist`.

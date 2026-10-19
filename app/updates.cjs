@@ -4,10 +4,13 @@ function parts(v) { const m = /^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.exe
 function newer(a, b) { a = parts(a); b = parts(b); if (!a || !b) return false; for (let i=0;i<3;i++) if (a[i] !== b[i]) return a[i] > b[i]; return false; }
 function parseRelease(r, current) {
   if (!r || r.draft || r.prerelease || !newer(r.tag_name, current)) return { state: 'current', current };
-  const version = parts(r.tag_name).join('.'), name = `sg0hann-SoundSwap-${version}-Windows-x64.zip`;
-  const download = `${BASE}/download/${r.tag_name}/${name}`;
-  if (!Array.isArray(r.assets) || !r.assets.some(a => a.name === name && a.state === 'uploaded' && a.browser_download_url === download)) return { state: 'current', current };
-  return { state: 'available', current, version, download, notes: String(r.body || '').slice(0,6000) };
+  const version = parts(r.tag_name).join('.');
+  if (!Array.isArray(r.assets)) return { state: 'current', current };
+  for (const [kind,name] of [['installer',`sg0hann-SoundSwap-${version}-Setup.exe`],['zip',`sg0hann-SoundSwap-${version}-Windows-x64.zip`]]) {
+    const download = `${BASE}/download/${r.tag_name}/${name}`;
+    if (r.assets.some(a => a.name === name && a.state === 'uploaded' && a.browser_download_url === download)) return { state: 'available', current, version, kind, download, notes: String(r.body || '').slice(0,6000) };
+  }
+  return { state: 'current', current };
 }
 class UpdateChecker {
   constructor(current, fetcher = globalThis.fetch, now = Date.now) { this.current=current; this.fetcher=fetcher; this.now=now; this.pending=null; this.cached=null; this.checked=0; }

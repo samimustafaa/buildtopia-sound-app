@@ -46,6 +46,7 @@ function renderCards() {
     const point = sprite[item.art], custom = state.images[item.id];
     let art;
     if (custom) art = '<div class="card-art custom"><img alt="" data-custom-image="' + item.id + '"></div>';
+    else if (item.gameImages?.length) art = '<div class="card-art game-art">' + item.gameImages.map((image, index) => { const [x,y,right,bottom] = image.bounds; const cell = 190 / item.gameImages.length, scale = Math.min((cell-12)/(right-x), 50/(bottom-y)); return `<span class="game-image-cell" style="width:${cell}px"><img src="${escapeHtml(image.src)}" alt="${escapeHtml(item.name)} game artwork" style="width:${image.size[0]*scale}px;height:${image.size[1]*scale}px;left:${(cell-(right-x)*scale)/2-x*scale}px;top:${(54-(bottom-y)*scale)/2-y*scale}px"></span>`; }).join('') + '</div>';
     else if (point) art = `<div class="card-art" style="background-position:${95 - point[0] * .85}px ${27 - point[1] * .85}px" aria-hidden="true"></div>`;
     else art = `<div class="card-art placeholder-icon" aria-hidden="true"><svg><use href="#i-${item.section === 'vehicles' ? 'car' : item.section === 'traps' ? 'trap' : 'weapon'}"/></svg></div>`;
     return `<article class="sound-card ${selected ? 'selected' : ''} ${!item.available ? 'unavailable' : ''}" data-id="${item.id}" title="${escapeHtml(item.note || 'Right-click to add your own item image')}"><div class="card-heading"><h2>${escapeHtml(item.name)}</h2><button class="preview ${state.playing === item.id ? 'playing' : ''}" data-preview="${item.id}" aria-label="Preview ${escapeHtml(item.name)} BuildTopia sound" title="${item.preview ? 'Preview BuildTopia sound' : 'No playable sample available'}" ${!item.preview ? 'disabled' : ''}><svg><use href="#i-play"/></svg></button></div>${art}<label class="card-toggle"><input type="checkbox" data-toggle="${item.id}" aria-label="Use BuildTopia sound for ${escapeHtml(item.name)}" ${selected ? 'checked' : ''} ${disabled ? 'disabled' : ''}><span>${label}</span></label><div class="card-meta">${badge}${item.linked.length ? '<span>Linked selection</span>' : ''}${item.note ? `<button data-info="${item.id}" aria-label="Details for ${escapeHtml(item.name)}"><svg><use href="#i-info"/></svg></button>` : ''}</div></article>`;
@@ -138,7 +139,9 @@ async function boot() {
     let result;
     if (api) result = await invoke('bootstrap');
     else result = { catalog: await fetch('data/catalog.json').then(r => r.json()), images: {}, status: { state: 'disconnected' }, connection: null, windows: false };
-    state.catalog = result.catalog; state.images = result.images; state.status = result.status; state.connection = result.connection; state.windows = result.windows;
+    state.catalog = result.catalog;
+    const bundledImages = await fetch('data/game-images.json').then(r => r.json());
+    $('included-images').innerHTML = bundledImages.map(image => `<figure><img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.name)}"><figcaption>${escapeHtml(image.name.replace(/^(AssaultRifle|SubmachineGun|SniperRifle|Special|Pistol|Throwable|Shotgun)-?/, ''))}${image.assigned ? '' : ' · sound mapping unconfirmed'}</figcaption></figure>`).join(''); state.images = result.images; state.status = result.status; state.connection = result.connection; state.windows = result.windows;
     if (result.connection) { $('folder').value = result.connection.folder; state.selected = new Set(result.connection.selections.filter(id => selectable(state.catalog.find(x => x.id === id) || {}))); state.applied = new Set(state.selected); $('connection-note').textContent = 'Connected · your installed sound profile is loaded.'; }
     renderFilters(); renderCards(); updateStatus();
     if (!api) $('connection-note').textContent = 'Interface preview only. The Windows app connects to your real game folder.';
@@ -153,6 +156,8 @@ function showPendingUpdate() {
   if(!pendingUpdate || state.busy || $('info-dialog').open || $('update-dialog').open) return;
   const r=pendingUpdate; pendingUpdate=null; promptedVersion=r.version;
   $('update-version').textContent=`Version ${r.version} is available. You have ${r.current}.`;
+  $('update-instructions').textContent = r.kind === 'installer' ? 'Download Setup.exe, close SoundSwap, and run the installer. It updates the same installation and keeps your settings and installed sounds.' : 'Download the ZIP and open the Setup.exe inside it. Close SoundSwap before installing. Your installed sounds stay in place.';
+  $('update-download').textContent = r.kind === 'installer' ? 'Download installer' : 'Download update';
   $('update-notes').textContent=r.notes || 'A new release is ready to download.';
   $('update-dialog').showModal();
 }
@@ -170,7 +175,7 @@ async function checkUpdates(manual=false) {
 }
 $('check-updates').addEventListener('click',()=>checkUpdates(true));
 $('update-later').addEventListener('click',()=>$('update-dialog').close());
-$('update-download').addEventListener('click',async()=>{try{await invoke('downloadUpdate');$('update-dialog').close();toast('Download opened. Close SoundSwap, then extract the entire update into a new folder.');}catch(e){toast(e.message,true);}});
+$('update-download').addEventListener('click',async()=>{try{await invoke('downloadUpdate');$('update-dialog').close();toast('Download opened. Close SoundSwap and run Setup.exe. Your installed sounds and settings stay in place.');}catch(e){toast(e.message,true);}});
 setInterval(showPendingUpdate,1000);
 window.addEventListener('focus',()=>checkUpdates(false));
 boot();

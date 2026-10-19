@@ -21,6 +21,8 @@ const server = http.createServer(async (req, res) => {
   const url = `http://127.0.0.1:${server.address().port}/`;
   await page.goto(url); await page.waitForSelector('.sound-card');
   assert(await page.locator('#apply').isDisabled());
+  assert.equal(await page.locator('[data-id="weapon_pistol"] .game-art img').count(), 2);
+  assert.equal(await page.locator('[data-id="weapon_ak47"] .game-art img').count(), 1);
   await page.locator('[data-toggle="weapon_ak47"]').check();
   assert.equal(await page.locator('#selected-count').textContent(), '1 sound selected');
   assert(await page.locator('#apply').isDisabled());
@@ -63,6 +65,8 @@ const server = http.createServer(async (req, res) => {
   assert((await page.locator('.sound-card').count()) >= 10);
   await page.locator('[data-page="settings"]').click();
   assert(await page.locator('#settings').isVisible());
+  assert.equal(await page.locator('#included-images img').count(), 24);
+  assert((await page.locator('#included-images').textContent()).includes('mapping unconfirmed'));
   await page.locator('#check-updates').click();
   await page.waitForFunction(() => document.querySelector('#update-status').textContent.includes('up to date'));
   await page.evaluate(() => window.__available = true);

@@ -15,7 +15,22 @@
     "available": true,
     "preview": "assets/audio/weapon_ak47.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/AssaultRifle-ak47_3e4e6af.png",
+        "bounds": [
+          16,
+          147,
+          387,
+          260
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_scar",
@@ -33,7 +48,22 @@
     "available": true,
     "preview": "assets/audio/weapon_scar.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/AssaultRifle-SCAR_48bd522.png",
+        "bounds": [
+          9,
+          124,
+          387,
+          272
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_xm8",
@@ -51,7 +81,22 @@
     "available": true,
     "preview": "assets/audio/weapon_xm8.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/AssaultRifle-XM8_03fb9bd.png",
+        "bounds": [
+          3,
+          113,
+          396,
+          278
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_tsg",
@@ -69,7 +114,22 @@
     "available": true,
     "preview": "assets/audio/weapon_tsg.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Shotgun-DTR_5fbdb63.png",
+        "bounds": [
+          10,
+          142,
+          384,
+          249
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_awp",
@@ -87,7 +147,22 @@
     "available": true,
     "preview": "assets/audio/weapon_awp.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/SniperRifle-AWP_15e94f0.png",
+        "bounds": [
+          7,
+          138,
+          400,
+          266
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_tsmg",
@@ -105,7 +180,22 @@
     "available": true,
     "preview": "assets/audio/weapon_tsmg.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/SubmachineGun-UMP9_43a12f5.png",
+        "bounds": [
+          7,
+          96,
+          395,
+          300
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_gatlin",
@@ -123,7 +213,22 @@
     "available": true,
     "preview": "assets/audio/weapon_gatlin.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Special-M134_17e8df1.png",
+        "bounds": [
+          38,
+          109,
+          351,
+          287
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_pistol",
@@ -141,11 +246,39 @@
     "available": true,
     "preview": "assets/audio/weapon_pistol.ogg",
     "note": "92F and P229 use this shared pistol sound-bank selection. Their exact independent routing has not been verified.",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Pistol-92F_5423f09.png",
+        "bounds": [
+          47,
+          106,
+          336,
+          292
+        ],
+        "size": [
+          400,
+          400
+        ]
+      },
+      {
+        "src": "assets/weapons/Pistol-P229_a4a1145.png",
+        "bounds": [
+          69,
+          54,
+          337,
+          335
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_pump",
-    "name": "M1915 / Pump",
+    "name": "S1897 / Pump",
     "category": "Shotguns",
     "section": "weapons",
     "art": "m1915",
@@ -158,8 +291,23 @@
     "tested": true,
     "available": true,
     "preview": "assets/audio/weapon_pump.ogg",
-    "note": "Pump sound bank. Your feedback called this M1915; the source clips are labelled s1897.",
-    "linked": []
+    "note": "S1897 pump shotgun, as named in the supplied game artwork. Earlier testing referred to it as M1915. The sound bank remains weapon_pump.",
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Shotgun_S1897_dd81f9e.png",
+        "bounds": [
+          6,
+          159,
+          392,
+          233
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_smg",
@@ -176,7 +324,22 @@
     "available": true,
     "preview": "assets/audio/weapon_smg.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/SubmachineGun-UZI_c85d979.png",
+        "bounds": [
+          60,
+          116,
+          312,
+          289
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_vss",
@@ -194,11 +357,26 @@
     "available": true,
     "preview": "assets/audio/weapon_vss.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/SniperRifle-VSS_457442d.png",
+        "bounds": [
+          24,
+          120,
+          364,
+          280
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_revolver",
-    "name": "Revolver",
+    "name": "P357 Revolver",
     "category": "Pistols",
     "section": "weapons",
     "art": "p229",
@@ -212,7 +390,22 @@
     "available": true,
     "preview": "assets/audio/weapon_revolver.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Pistol-P357_f7e8a01.png",
+        "bounds": [
+          7,
+          88,
+          396,
+          306
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_vhs",
@@ -230,7 +423,22 @@
     "available": true,
     "preview": "assets/audio/weapon_vhs.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/AssaultRifle-VHS_8b78b13.png",
+        "bounds": [
+          7,
+          118,
+          398,
+          275
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "awp_reload",
@@ -244,7 +452,22 @@
     "available": true,
     "preview": "assets/audio/awp_reload.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/SniperRifle-AWP_15e94f0.png",
+        "bounds": [
+          7,
+          138,
+          400,
+          266
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_bomb",
@@ -262,7 +485,7 @@
   },
   {
     "id": "weapon_arch",
-    "name": "Bow",
+    "name": "X-1 Bow",
     "category": "Special",
     "section": "weapons",
     "art": "vss",
@@ -272,7 +495,22 @@
     "available": true,
     "preview": "assets/audio/weapon_arch.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Special-X-1_4f7f096.png",
+        "bounds": [
+          125,
+          57,
+          242,
+          343
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_bowling",
@@ -286,7 +524,22 @@
     "available": true,
     "preview": "assets/audio/weapon_bowling.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Throwable-bowling_7a81344.png",
+        "bounds": [
+          90,
+          103,
+          288,
+          300
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_we_broadsword",
@@ -332,7 +585,7 @@
   },
   {
     "id": "weapon_flame",
-    "name": "Flamethrower",
+    "name": "M5 Flamethrower",
     "category": "Special",
     "section": "weapons",
     "art": "m134",
@@ -342,7 +595,22 @@
     "available": true,
     "preview": "assets/audio/weapon_flame.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Special-M5_730b3a6.png",
+        "bounds": [
+          17,
+          119,
+          389,
+          283
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_frag",
@@ -356,7 +624,22 @@
     "available": true,
     "preview": "assets/audio/weapon_frag.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Throwable_shoulei_ea51f36.png",
+        "bounds": [
+          126,
+          96,
+          273,
+          305
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_gzfsq",
@@ -374,7 +657,7 @@
   },
   {
     "id": "weapon_grenade",
-    "name": "Grenade Launcher",
+    "name": "MGL Grenade Launcher",
     "category": "Special",
     "section": "weapons",
     "art": "dtr",
@@ -384,7 +667,22 @@
     "available": true,
     "preview": "assets/audio/weapon_grenade.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Special-MGL_9d52f57.png",
+        "bounds": [
+          21,
+          122,
+          387,
+          266
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_konghe",
@@ -398,7 +696,22 @@
     "available": true,
     "preview": "assets/audio/weapon_konghe.ogg",
     "note": "Source-bank label; the exact in-game item name still needs confirmation.",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Throwable-konghe_d2e65dd.png",
+        "bounds": [
+          134,
+          116,
+          265,
+          284
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_m16",
@@ -440,11 +753,26 @@
     "available": true,
     "preview": "assets/audio/weapon_reload_plasma.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/SubmachineGun-PL_4e1831f.png",
+        "bounds": [
+          44,
+          123,
+          358,
+          285
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_plasma",
-    "name": "Plasma SMG",
+    "name": "PL Plasma SMG",
     "category": "SMGs",
     "section": "weapons",
     "art": "ump9",
@@ -454,11 +782,26 @@
     "available": true,
     "preview": "assets/audio/weapon_plasma.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/SubmachineGun-PL_4e1831f.png",
+        "bounds": [
+          44,
+          123,
+          358,
+          285
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_rocket",
-    "name": "Rocket Launcher",
+    "name": "RPG7 Rocket Launcher",
     "category": "Special",
     "section": "weapons",
     "art": "awp",
@@ -468,7 +811,22 @@
     "available": true,
     "preview": "assets/audio/weapon_rocket.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/Special-RPG7_b93a3af.png",
+        "bounds": [
+          1,
+          150,
+          398,
+          240
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon_sasr",
@@ -518,7 +876,22 @@
     "available": true,
     "preview": "assets/audio/weapon_st40.ogg",
     "note": "",
-    "linked": []
+    "linked": [],
+    "gameImages": [
+      {
+        "src": "assets/weapons/AssaultRifle-ST40_110743d.png",
+        "bounds": [
+          27,
+          138,
+          366,
+          268
+        ],
+        "size": [
+          400,
+          400
+        ]
+      }
+    ]
   },
   {
     "id": "weapon",

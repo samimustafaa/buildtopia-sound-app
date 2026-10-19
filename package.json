@@ -1,6 +1,6 @@
 {
   "name": "sg0hann-soundswap",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Selective BuildTopia sound packs for Creative Destruction",
   "main": "app/main.cjs",
   "author": "sg0hann",
@@ -11,14 +11,48 @@
     "package:win": "node tools/package-win.cjs",
     "prestart": "node tools/restore-data.cjs",
     "pretest": "node tools/restore-data.cjs",
-    "prepackage:win": "node tools/restore-data.cjs"
+    "prepackage:win": "node tools/restore-data.cjs",
+    "installer:win": "electron-builder --win nsis --x64 --prepackaged \"dist/sg0hann SoundSwap-win32-x64\" --publish never"
   },
   "devDependencies": {
     "@electron/packager": "20.3.0",
-    "electron": "44.9.0"
+    "electron": "44.9.0",
+    "electron-builder": "26.15.3"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/samimustafaa/buildtopia-sound-app.git"
+  },
+  "productName": "sg0hann SoundSwap",
+  "build": {
+    "appId": "com.sg0hann.soundswap",
+    "productName": "sg0hann SoundSwap",
+    "directories": {
+      "output": "release"
+    },
+    "publish": null,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "app/assets/app.ico",
+      "artifactName": "sg0hann-SoundSwap-${version}-Setup.exe"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "sg0hann SoundSwap",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true,
+      "differentialPackage": false
+    }
   }
 }
