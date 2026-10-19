@@ -44,11 +44,11 @@ class UpdateChecker {
     if(release?.state!=='available' || release.kind!=='installer') throw Error('No installer update is available.');
     if(!/^sha256:[a-f0-9]{64}$/.test(release.digest || '')) throw Error('This release has no verified checksum. Try again later.');
     if(!Number.isSafeInteger(release.size) || release.size<2 || release.size>500*1024*1024) throw Error('Invalid update size.');
-    await fs.mkdir(directory,{recursive:true});
     this.downloading=true; this.ready=null;
     const target=path.join(directory,`SoundSwap-${release.version}-Setup.exe`), temporary=target+'.partial';
     let file;
     try {
+      await fs.mkdir(directory,{recursive:true});
       let url=release.download, response;
       for(let i=0;i<6;i++) {
         response=await this.fetcher(url,{redirect:'manual',signal:AbortSignal.timeout(10*60*1000)});

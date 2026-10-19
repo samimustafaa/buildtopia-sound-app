@@ -77,7 +77,7 @@ app.whenReady().then(async () => {
     const { catalog } = await engine.load(); const settings = await engine.settings();
     let connection = null;
     if (settings.folder) { try { connection = await engine.inspect(settings.folder); folder = connection.folder; } catch {} }
-    if(connection) connection.removedExtras=connection.selections.some(id=>catalog.some(x=>x.id===id && x.section!=='weapons'));
+    if(connection) connection.removedExtras=connection.selections.some(id=>catalog.some(x=>x.id===id && x.section!=='weapons' && x.differentAudio));
     status = await gameStatus(folder);
     return { catalog: catalog.filter(x=>x.section==='weapons').map(({preview,...item})=>item), images: await images(catalog), connection, status, version: app.getVersion(), windows: process.platform === 'win32' };
   });
@@ -89,7 +89,7 @@ app.whenReady().then(async () => {
     if (engine.busy) throw new Error('Wait for the current update to finish.');
     const info = await engine.inspect(input); folder = info.folder;
     const settings = await engine.settings(); settings.folder = folder; await engine.saveSettings(settings);
-    const {catalog}=await engine.load(); info.removedExtras=info.selections.some(id=>catalog.some(x=>x.id===id && x.section!=='weapons')); status = await gameStatus(folder); return { connection: info, status };
+    const {catalog}=await engine.load(); info.removedExtras=info.selections.some(id=>catalog.some(x=>x.id===id && x.section!=='weapons' && x.differentAudio)); status = await gameStatus(folder); return { connection: info, status };
   });
   handle('status', async () => {
     if (!polling) { polling = true; try { status = await gameStatus(folder); } finally { polling = false; } }
