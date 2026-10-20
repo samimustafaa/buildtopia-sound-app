@@ -46,7 +46,9 @@ $desktop = Join-Path ([Environment]::GetFolderPath('Desktop')) 'BuilTopia Sound 
 if (!(Test-Path $desktop)) { throw 'Desktop shortcut is missing' }
 Write-Host 'Installer passed: one installation, desktop shortcut, repeat install keeps user data.'
 # Exercise electron-updater using a real local manifest and the built installer.
-$electron = node -p "require('electron')"
+node -e "require('electron')"
+if ($LASTEXITCODE -ne 0) { throw 'Electron test runtime could not be prepared.' }
+$electron = (Resolve-Path 'node_modules/electron/dist/electron.exe').Path
 $nativeTest = (Resolve-Path 'tools/test-native-update.cjs').Path
 $outLog = Join-Path (Resolve-Path 'release').Path 'native-update.stdout.log'
 $errorLog = Join-Path (Resolve-Path 'release').Path 'native-update.stderr.log'
