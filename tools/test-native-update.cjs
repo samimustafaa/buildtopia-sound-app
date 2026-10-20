@@ -19,8 +19,9 @@ app.whenReady().then(async()=>{
  Object.defineProperty(adapter,'version',{value:'1.4.3'});
  Object.defineProperty(adapter,'isPackaged',{value:true});
  Object.defineProperty(adapter,'appUpdateConfigPath',{value:path.join(root,'win-unpacked/resources/app-update.yml')});
- const updater=new NsisUpdater({provider:'generic',url:`http://127.0.0.1:${server.address().port}/`},adapter);
+ const updater=new NsisUpdater(null,adapter);
  updater.httpExecutor=new ElectronHttpExecutor(()=>{});
+ updater.setFeedURL({provider:'generic',url:`http://127.0.0.1:${server.address().port}/`});
  const controller=new NativeUpdates(updater,{error:e=>{console.error(e);app.exit(1);}});
  const deadline=setTimeout(()=>{console.error('Native update timed out');app.exit(1);},90000);
  await controller.download(version);
