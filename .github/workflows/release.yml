@@ -22,7 +22,6 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run package:win
-      - run: npm run installer:win
       - name: Scan release artifacts with Microsoft Defender
         shell: pwsh
         run: ./tools/scan-defender.ps1

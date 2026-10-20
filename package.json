@@ -8,11 +8,11 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test test/*.test.cjs",
-    "package:win": "electron-builder --win --x64 --dir --publish never",
+    "package:win": "electron-builder --win nsis --x64 --publish never",
     "prestart": "node tools/restore-data.cjs",
     "pretest": "node tools/restore-data.cjs",
     "prepackage:win": "node tools/restore-data.cjs",
-    "installer:win": "electron-builder --win nsis --x64 --prepackaged release/win-unpacked --publish never"
+    "installer:win": "electron-builder --win nsis --x64 --publish never"
   },
   "devDependencies": {
     "@electron/packager": "20.3.0",
