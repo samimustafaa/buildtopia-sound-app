@@ -63,7 +63,7 @@ for ($attempt=0; $attempt -lt 180; $attempt++) {
   if ($status.state -eq 'complete') { $complete=$true; break }
   Start-Sleep -Seconds 1
 }
-if (!$complete) { throw 'Automatic installation did not finish.' }
+if (!$complete) { throw ('Automatic installation did not finish. Last state: '+$status.state) }
 $relaunched=$false
 for ($attempt=0; $attempt -lt 30; $attempt++) {
   if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $second }).Count -gt 0) { $relaunched=$true; break }
