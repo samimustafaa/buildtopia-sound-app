@@ -17,6 +17,7 @@ app.whenReady().then(async()=>{
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  const adapter=new ElectronAppAdapter(app);
  Object.defineProperty(adapter,'version',{value:'1.4.3'});
+ Object.defineProperty(adapter,'isPackaged',{value:true});
  Object.defineProperty(adapter,'appUpdateConfigPath',{value:path.join(root,'win-unpacked/resources/app-update.yml')});
  const updater=new NsisUpdater({provider:'generic',url:`http://127.0.0.1:${server.address().port}/`},adapter);
  updater.httpExecutor=new ElectronHttpExecutor(()=>{});
