@@ -47,7 +47,9 @@ async function images(catalog) {
 }
 app.setName('BuilTopia Sound - sg0hann');
 // Keep existing settings and backups when the display name changes.
-app.setPath('userData', path.join(app.getPath('appData'), 'sg0hann SoundSwap'));
+const existingDataPath = path.join(app.getPath('appData'), 'sg0hann SoundSwap');
+require('node:fs').mkdirSync(existingDataPath, { recursive: true });
+app.setPath('userData', existingDataPath);
 if (process.platform === 'win32') app.setAppUserModelId('com.sg0hann.soundswap');
 if (process.platform === 'win32' && !app.requestSingleInstanceLock()) app.quit();
 else app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
