@@ -45,7 +45,9 @@ async function images(catalog) {
   }
   return result;
 }
-app.setName('sg0hann SoundSwap');
+app.setName('BuilTopia Sound - sg0hann');
+// Keep existing settings and backups when the display name changes.
+app.setPath('userData', path.join(app.getPath('appData'), 'sg0hann SoundSwap'));
 if (process.platform === 'win32') app.setAppUserModelId('com.sg0hann.soundswap');
 if (process.platform === 'win32' && !app.requestSingleInstanceLock()) app.quit();
 else app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
@@ -69,7 +71,7 @@ app.whenReady().then(async () => {
     child.unref();restarting=true;setTimeout(()=>app.quit(),150);return true;
   });
   engine = new SoundEngine(path.join(__dirname, 'data'), app.getPath('userData'), gameStatus);
-  win = new BrowserWindow({ width: 1380, height: 930, minWidth: 920, minHeight: 680, backgroundColor: '#201c2b', title: 'sg0hann SoundSwap', icon: path.join(__dirname, 'assets/app.png'), autoHideMenuBar: true, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true } });
+  win = new BrowserWindow({ width: 1380, height: 930, minWidth: 920, minHeight: 680, backgroundColor: '#201c2b', title: 'BuilTopia Sound - sg0hann', icon: path.join(__dirname, 'assets/app.png'), autoHideMenuBar: true, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true } });
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', event => event.preventDefault());
   win.webContents.on('will-attach-webview', event => event.preventDefault());

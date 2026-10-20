@@ -1,6 +1,6 @@
 {
   "name": "sg0hann-soundswap",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Selective BuildTopia sound packs for Creative Destruction",
   "main": "app/main.cjs",
   "author": "sg0hann",
@@ -23,10 +23,10 @@
     "type": "git",
     "url": "https://github.com/samimustafaa/buildtopia-sound-app.git"
   },
-  "productName": "sg0hann SoundSwap",
+  "productName": "BuilTopia Sound - sg0hann",
   "build": {
     "appId": "com.sg0hann.soundswap",
-    "productName": "sg0hann SoundSwap",
+    "productName": "BuilTopia Sound - sg0hann",
     "directories": {
       "output": "release"
     },
@@ -41,7 +41,8 @@
         }
       ],
       "icon": "app/assets/app.ico",
-      "artifactName": "sg0hann-SoundSwap-${version}-Setup.exe"
+      "artifactName": "sg0hann-SoundSwap-${version}-Setup.exe",
+      "executableName": "sg0hann SoundSwap"
     },
     "nsis": {
       "oneClick": true,
@@ -49,7 +50,7 @@
       "allowElevation": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "sg0hann SoundSwap",
+      "shortcutName": "BuilTopia Sound - sg0hann",
       "deleteAppDataOnUninstall": false,
       "runAfterFinish": true,
       "differentialPackage": false

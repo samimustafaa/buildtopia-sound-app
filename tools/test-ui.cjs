@@ -56,7 +56,7 @@ const server = http.createServer(async (req, res) => {
   await page.waitForFunction(() => document.querySelector('#progress-overlay').hidden);
   assert.equal(await page.evaluate(() => window.__calls.length), 1);
   assert(await page.locator('#apply').isDisabled());
-  assert((await page.locator('#connection-note').textContent()).includes('fully close SoundSwap'));
+  assert((await page.locator('#connection-note').textContent()).includes('fully close BuilTopia Sound'));
   await page.locator('#search').fill('AK-47'); assert.equal(await page.locator('.sound-card').count(), 1);
   await page.locator('#search').fill('');
   assert.equal(await page.locator('[data-page="vehicles"], [data-page="traps"], [data-preview], audio').count(),0);

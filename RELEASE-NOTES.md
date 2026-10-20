@@ -1,9 +1,10 @@
-## SoundSwap 1.4.1
+## BuilTopia Sound - sg0hann 1.4.2
 
-- Uses the supplied dark violet Grabient background.
-- Lightweight button hover transitions and short page fades. Reduced-motion preferences are respected.
-- Clearer Restore all CD sounds control: the full original Creative Destruction wwise.npk is included, restoring every original sound without reinstalling the game.
-- Lower background activity: no repeating popup timer, and game-process polling pauses while the app is hidden.
-- In-app Update & restart preserves settings and applied sounds.
+- New name: BuilTopia Sound - sg0hann.
+- Your selected gold and charcoal icon is used by the app, installer, desktop and Start menu shortcuts, and window/taskbar.
+- Short, simple README.
+- Keeps your existing installation, settings, custom images, backups and applied sounds.
 
-Close the game before applying or restoring sounds. After applying, fully close SoundSwap; your selected sounds stay installed.
+Update through Settings → Check for updates → Update & restart.
+
+Close the game before applying or restoring sounds. After applying, fully close the app; sounds stay installed. Restore all CD sounds brings back the included original wwise.npk without reinstalling the game.
