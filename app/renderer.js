@@ -95,8 +95,8 @@ async function install(restore = false) {
     if (result) {
       state.selected = new Set(result.selected); state.applied = new Set(result.selected);
       state.connection.removedExtras = false; state.connection.original = result.resources === 0; state.connection.backedUp = true;
-      toast(result.warning || (restore || result.resources === 0 ? 'Original Creative Destruction sounds restored.' : `Applied ${state.selected.size} selected sounds. You can fully close SoundSwap and launch the game. Sounds stay installed.`), Boolean(result.warning));
-      $('connection-note').textContent = `Connected · ${result.resources} sound resources installed · backup kept. You can fully close SoundSwap; sounds stay installed.`;
+      toast(result.warning || (restore || result.resources === 0 ? 'Original Creative Destruction sounds restored.' : `Applied ${state.selected.size} selected sounds. You can fully close BuilTopia Sound and launch the game. Sounds stay installed.`), Boolean(result.warning));
+      $('connection-note').textContent = `Connected · ${result.resources} sound resources installed · backup kept. You can fully close BuilTopia Sound; sounds stay installed.`;
     }
   } catch (e) { toast(e.message, true); }
   finally { state.busy = false; $('progress-overlay').hidden = true; renderCards(); updateFooter(); showPendingUpdate(); }
@@ -144,7 +144,7 @@ function showPendingUpdate() {
   if(!pendingUpdate || state.busy || $('info-dialog').open || $('update-dialog').open) return;
   const r=pendingUpdate; pendingUpdate=null; promptedVersion=r.version;
   $('update-version').textContent=`Version ${r.version} is available. You have ${r.current}.`;
-  $('update-instructions').textContent = 'Downloads here, updates this installation, then restarts SoundSwap. Your sounds and settings stay saved.';
+  $('update-instructions').textContent = 'Downloads here, updates this installation, then restarts BuilTopia Sound. Your sounds and settings stay saved.';
   $('update-download').textContent = 'Update & restart';
   $('update-notes').textContent=r.notes || 'A new release is ready to download.';
   $('update-dialog').showModal();

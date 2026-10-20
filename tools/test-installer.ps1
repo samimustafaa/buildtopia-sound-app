@@ -4,9 +4,9 @@ $setup = (Resolve-Path "release/sg0hann-SoundSwap-$version-Setup.exe").Path
 function Install-SoundSwap {
   $process = Start-Process -FilePath $setup -ArgumentList '/S' -Wait -PassThru
   if ($process.ExitCode -ne 0) { throw "Installer failed: $($process.ExitCode)" }
-  $entries = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -like 'sg0hann SoundSwap*' })
+  $entries = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -eq 'BuilTopia Sound - sg0hann' })
   if ($entries.Count -ne 1) { throw "Expected one per-user installation, found $($entries.Count)" }
-  $shortcut = Join-Path ([Environment]::GetFolderPath('Desktop')) 'sg0hann SoundSwap.lnk'
+  $shortcut = Join-Path ([Environment]::GetFolderPath('Desktop')) 'BuilTopia Sound - sg0hann.lnk'
   if (!(Test-Path $shortcut)) { throw 'Desktop shortcut is missing' }
   $shell = New-Object -ComObject WScript.Shell
   $exe = $shell.CreateShortcut($shortcut).TargetPath
@@ -22,7 +22,7 @@ Set-Content $marker 'preserve-settings-and-backups'
 $second = Install-SoundSwap
 if ($first -ne $second) { throw 'Reinstall created a different installation path' }
 if ((Get-Content $marker) -ne 'preserve-settings-and-backups') { throw 'Reinstall removed user data' }
-$desktop = Join-Path ([Environment]::GetFolderPath('Desktop')) 'sg0hann SoundSwap.lnk'
+$desktop = Join-Path ([Environment]::GetFolderPath('Desktop')) 'BuilTopia Sound - sg0hann.lnk'
 if (!(Test-Path $desktop)) { throw 'Desktop shortcut is missing' }
 Write-Host 'Installer passed: one installation, desktop shortcut, repeat install keeps user data.'
 # Exercise the same detached helper used by Update & restart, with a real installer.
