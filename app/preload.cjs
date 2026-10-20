@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('soundSwap', {
   downloadUpdate: () => ipcRenderer.invoke('download-update'),
   installUpdate: () => ipcRenderer.invoke('install-update'),
   onUpdateProgress: callback => {const listener=(_,percent)=>callback(percent);ipcRenderer.on('update-progress',listener);return()=>ipcRenderer.removeListener('update-progress',listener);},
+  onUpdateStage: callback => {const listener=(_,stage)=>callback(stage);ipcRenderer.on('update-stage',listener);return()=>ipcRenderer.removeListener('update-stage',listener);},
   bootstrap: () => ipcRenderer.invoke('bootstrap'),
   chooseFolder: () => ipcRenderer.invoke('choose-folder'),
   connect: folder => ipcRenderer.invoke('connect', folder),

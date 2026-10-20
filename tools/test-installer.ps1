@@ -45,22 +45,31 @@ if ((Get-Content $marker) -ne 'preserve-settings-and-backups') { throw 'Reinstal
 $desktop = Join-Path ([Environment]::GetFolderPath('Desktop')) 'BuilTopia Sound - sg0hann.lnk'
 if (!(Test-Path $desktop)) { throw 'Desktop shortcut is missing' }
 Write-Host 'Installer passed: one installation, desktop shortcut, repeat install keeps user data.'
-# Exercise the same detached helper used by Update & restart, with a real installer.
+# Run the production Node launcher, not PowerShell Start-Process as a substitute.
 $updateRoot = Join-Path $env:TEMP 'soundswap-update-smoke'
 New-Item -ItemType Directory -Force $updateRoot | Out-Null
-$configPath = Join-Path $updateRoot 'install.json'
-$waiting = Start-Process powershell.exe -ArgumentList '-NoProfile','-Command','Start-Sleep -Seconds 2' -PassThru -WindowStyle Hidden
-@{ installer=$setup; executable=$second; pid=$waiting.Id; sha256=(Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant() } | ConvertTo-Json | Set-Content $configPath
-$helper = (Resolve-Path 'app/update-install.ps1').Path
-$helperProcess = Start-Process powershell.exe -ArgumentList '-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',('"'+$helper+'"'),'-ConfigPath',('"'+$configPath+'"') -PassThru -WindowStyle Hidden
-if (!$helperProcess.WaitForExit(180000)) { throw 'Update helper did not exit within three minutes.' }
-if (Test-Path ($configPath+'.error.txt')) { throw (Get-Content ($configPath+'.error.txt') -Raw) }
-$relaunched = $false
+$configPath = Join-Path $updateRoot 'handoff.json'
+@{ installer=$setup; executable=$second; directory=$updateRoot; version=$version; sha256=(Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant() } | ConvertTo-Json | Set-Content $configPath
+$node = (Get-Command node).Source
+$runner = (Resolve-Path 'tools/test-update-handoff.cjs').Path
+$parent = Start-Process $node -ArgumentList ('"'+$runner+'"'),('"'+$configPath+'"') -PassThru -WindowStyle Hidden
+if (!$parent.WaitForExit(30000)) { throw 'Node update handoff did not confirm readiness.' }
+if ($parent.ExitCode -ne 0) { throw 'Production Node update handoff failed.' }
+$statusPath=Join-Path $updateRoot 'install-status.json'
+$complete=$false
+for ($attempt=0; $attempt -lt 180; $attempt++) {
+  $status=Get-Content -LiteralPath $statusPath -Raw | ConvertFrom-Json
+  if ($status.state -eq 'error') { throw $status.message }
+  if ($status.state -eq 'complete') { $complete=$true; break }
+  Start-Sleep -Seconds 1
+}
+if (!$complete) { throw 'Automatic installation did not finish.' }
+$relaunched=$false
 for ($attempt=0; $attempt -lt 30; $attempt++) {
   if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $second }).Count -gt 0) { $relaunched=$true; break }
   Start-Sleep -Seconds 1
 }
-if (!$relaunched) { throw 'The update helper did not relaunch SoundSwap.' }
+if (!$relaunched) { throw 'Automatic update did not reopen the app.' }
 if ((Get-Content $marker) -ne 'preserve-settings-and-backups') { throw 'Update removed user data' }
 Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $second } | Stop-Process -Force
-Write-Host 'Update passed: waits for app exit, verifies installer, silently updates and relaunches, preserves data.'
+Write-Host 'Production Node update passed: readiness confirmed, parent exited, silent installation finished, app reopened, data preserved.'

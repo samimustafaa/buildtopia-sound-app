@@ -132,6 +132,8 @@ async function boot() {
     state.images = result.images; state.status = result.status; state.connection = result.connection; state.windows = result.windows;
     if (result.connection) { $('folder').value = result.connection.folder; state.selected = new Set(result.connection.selections.filter(id => selectable(state.catalog.find(x => x.id === id) || {}))); state.applied = new Set(state.selected); $('connection-note').textContent = 'Connected · your installed sound profile is loaded.'; }
     renderFilters(); renderCards(); updateStatus();
+    if(result.updateResult?.state==='complete')toast('Update installed. You’re ready to go.');
+    if(result.updateResult?.state==='error')toast('The update did not finish: '+result.updateResult.message,true);
     if (!api) $('connection-note').textContent = 'Interface preview only. The Windows app connects to your real game folder.';
     if (api && !result.windows) toast('This build can preview the interface here. Applying sounds requires Windows.');
     if (api?.checkUpdates) { setTimeout(() => checkUpdates(false), 2000); setInterval(() => checkUpdates(false), 4*60*60*1000); }
@@ -167,9 +169,10 @@ $('update-dialog').addEventListener('cancel',e=>{if(state.updating)e.preventDefa
 $('update-download').addEventListener('click',async()=>{
   if(state.busy || state.updating)return;
   state.updating=true; $('update-download').disabled=true; $('update-later').disabled=true;
-  try { $('update-instructions').textContent='Downloading update…'; await invoke('downloadUpdate'); $('update-instructions').textContent='Verified. Restarting to finish the update…'; await invoke('installUpdate'); }
+  try { $('update-instructions').textContent='Downloading update…'; await invoke('downloadUpdate'); $('update-instructions').textContent='Installing update. The app will reopen automatically.'; }
   catch(e){state.updating=false; $('update-download').disabled=false; $('update-later').disabled=false; $('update-instructions').textContent=e.message;}
 });
+api?.onUpdateStage?.(stage=>{$('update-instructions').textContent=stage;});
 api?.onUpdateProgress?.(percent=>{$('update-instructions').textContent=`Downloading update… ${percent}%`;});
 for(const id of ['info-dialog','update-dialog']) $(id).addEventListener('close',showPendingUpdate);
 window.addEventListener('focus',()=>checkUpdates(false));

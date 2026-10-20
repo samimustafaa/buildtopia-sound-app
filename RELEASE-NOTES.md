@@ -1,10 +1,10 @@
-## BuilTopia Sound - sg0hann 1.4.2
+## BuilTopia Sound - sg0hann 1.4.3
 
-- New name: BuilTopia Sound - sg0hann.
-- Your selected gold and charcoal icon is used by the app, installer, desktop and Start menu shortcuts, and window/taskbar.
-- Short, simple README.
-- Keeps your existing installation, settings, custom images, backups and applied sounds.
+- Verified downloads now start installation from the main process automatically.
+- The app waits for the Windows helper to confirm it is ready before closing.
+- Fixed the hidden PowerShell process launch used for installation.
+- The helper silently installs the update, then reopens the app automatically.
+- Failed startup keeps the app open. Installation errors are reported on relaunch.
+- Existing settings, backups and game sounds stay saved.
 
-Update through Settings → Check for updates → Update & restart.
-
-Close the game before applying or restoring sounds. After applying, fully close the app; sounds stay installed. Restore all CD sounds brings back the included original wwise.npk without reinstalling the game.
+If your installed updater does not finish installing, close the app and run this Setup.exe once to receive the fix. Future updates complete through Update & restart.
