@@ -3,9 +3,9 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('soundSwap', {
   checkUpdates: force => ipcRenderer.invoke('check-updates', force === true),
   downloadUpdate: () => ipcRenderer.invoke('download-update'),
-  installUpdate: () => ipcRenderer.invoke('install-update'),
   onUpdateProgress: callback => {const listener=(_,percent)=>callback(percent);ipcRenderer.on('update-progress',listener);return()=>ipcRenderer.removeListener('update-progress',listener);},
   onUpdateStage: callback => {const listener=(_,stage)=>callback(stage);ipcRenderer.on('update-stage',listener);return()=>ipcRenderer.removeListener('update-stage',listener);},
+  onUpdateFailed: callback => {const listener=(_,message)=>callback(message);ipcRenderer.on('update-failed',listener);return()=>ipcRenderer.removeListener('update-failed',listener);},
   bootstrap: () => ipcRenderer.invoke('bootstrap'),
   chooseFolder: () => ipcRenderer.invoke('choose-folder'),
   connect: folder => ipcRenderer.invoke('connect', folder),

@@ -23,6 +23,9 @@ jobs:
       - run: npm test
       - run: npm run package:win
       - run: npm run installer:win
+      - name: Scan release artifacts with Microsoft Defender
+        shell: pwsh
+        run: ./tools/scan-defender.ps1
       - name: Verify installation and settings retention
         shell: pwsh
         run: ./tools/test-installer.ps1
@@ -37,5 +40,5 @@ jobs:
           $tag = "v$version"
           gh release view $tag --json tagName 2>$null
           if ($LASTEXITCODE -eq 0) { Write-Host "Release exists; leaving unchanged."; exit 0 }
-          gh release create $tag "release/sg0hann-SoundSwap-$version-Setup.exe" "release/sg0hann-SoundSwap-$version-Windows-x64.zip" "release/SHA256SUMS.txt" --target "${{ github.sha }}" --title "BuilTopia Sound - sg0hann $version" --notes-file RELEASE-NOTES.md --latest
+          gh release create $tag "release/sg0hann-SoundSwap-$version-Setup.exe" "release/sg0hann-SoundSwap-$version-Windows-x64.zip" "release/SHA256SUMS.txt" "release/latest.yml" "release/DEFENDER-SCAN.txt" --target "${{ github.sha }}" --title "BuilTopia Sound - sg0hann $version" --notes-file RELEASE-NOTES.md --latest
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

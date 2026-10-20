@@ -1,6 +1,6 @@
 {
   "name": "sg0hann-soundswap",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "description": "Selective BuildTopia sound packs for Creative Destruction",
   "main": "app/main.cjs",
   "author": "sg0hann",
@@ -8,11 +8,11 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test test/*.test.cjs",
-    "package:win": "node tools/package-win.cjs",
+    "package:win": "electron-builder --win --x64 --dir --publish never",
     "prestart": "node tools/restore-data.cjs",
     "pretest": "node tools/restore-data.cjs",
     "prepackage:win": "node tools/restore-data.cjs",
-    "installer:win": "electron-builder --win nsis --x64 --prepackaged \"dist/sg0hann SoundSwap-win32-x64\" --publish never"
+    "installer:win": "electron-builder --win nsis --x64 --prepackaged release/win-unpacked --publish never"
   },
   "devDependencies": {
     "@electron/packager": "20.3.0",
@@ -30,7 +30,12 @@
     "directories": {
       "output": "release"
     },
-    "publish": null,
+    "publish": {
+      "provider": "github",
+      "owner": "samimustafaa",
+      "repo": "buildtopia-sound-app",
+      "releaseType": "release"
+    },
     "win": {
       "target": [
         {
@@ -54,6 +59,16 @@
       "deleteAppDataOnUninstall": false,
       "runAfterFinish": true,
       "differentialPackage": false
-    }
+    },
+    "files": [
+      "app/**/*",
+      "!app/data/original.parts/**/*",
+      "!app/assets/audio/**/*",
+      "!app/assets/weapon-placeholder-sheet.png",
+      "!app/**/.*"
+    ]
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
   }
 }

@@ -7,7 +7,8 @@ const { promisify } = require('node:util');
 const { pathToFileURL } = require('node:url');
 const { SoundEngine } = require('./engine.cjs');
 const { UpdateChecker } = require('./updates.cjs');
-const { launchUpdate } = require('./update-handoff.cjs');
+const { autoUpdater } = require('electron-updater');
+const { NativeUpdates } = require('./native-updates.cjs');
 const run = promisify(execFile);
 let win, engine, folder = '', status = { state: 'unknown' }, polling = false;
 const pageUrl = pathToFileURL(path.join(__dirname, 'index.html')).href;
@@ -59,26 +60,23 @@ app.whenReady().then(async () => {
   handle('check-updates', async force => updater.check(force === true));
   let restarting=false;
   let updateBusy=false;
-  const installDownloadedUpdate=async()=>{
-    if(restarting)return true;
-    if(engine.busy || updater.downloading || !updater.ready)throw Error('The update is not ready.');
-    win.webContents.send('update-stage','Preparing automatic installation…');
-    await launchUpdate({directory:path.join(app.getPath('userData'),'updates'),...updater.ready,executable:process.execPath,version:updater.cached?.version});
-    restarting=true;
-    win.webContents.send('update-stage','Installing update. The app will close and reopen automatically.');
-    setTimeout(()=>app.quit(),300);
-    return true;
-  };
+  const nativeUpdates=new NativeUpdates(autoUpdater,{
+    progress:percent=>win?.webContents.send('update-progress',percent),
+    error:error=>{restarting=false;updateBusy=false;if(win&&!win.isDestroyed())win.webContents.send('update-failed',error.message);}
+  });
   handle('download-update',async()=>{
     if(engine.busy || updateBusy)throw Error('Wait for the current update to finish.');
     if(process.platform!=='win32' || !app.isPackaged)throw Error('Updates require the installed Windows app.');
     updateBusy=true;
     try {
-      await updater.download(path.join(app.getPath('userData'),'updates'),percent=>win.webContents.send('update-progress',percent));
-      return await installDownloadedUpdate();
+      const release=await updater.check(true);
+      if(release.state!=='available')throw Error('No update is available.');
+      await nativeUpdates.download(release.version);
+      win.webContents.send('update-stage','Update verified. Installing and restarting automatically…');
+      restarting=true;setTimeout(()=>{updateBusy=false;nativeUpdates.install();},300);
+      return true;
     }finally{updateBusy=false;}
   });
-  handle('install-update',installDownloadedUpdate);
   engine = new SoundEngine(path.join(__dirname, 'data'), app.getPath('userData'), gameStatus);
   win = new BrowserWindow({ width: 1380, height: 930, minWidth: 920, minHeight: 680, backgroundColor: '#201c2b', title: 'BuilTopia Sound - sg0hann', icon: path.join(__dirname, 'assets/app.png'), autoHideMenuBar: true, webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true } });
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
@@ -90,9 +88,7 @@ app.whenReady().then(async () => {
     if (settings.folder) { try { connection = await engine.inspect(settings.folder); folder = connection.folder; } catch {} }
     if(connection) connection.removedExtras=connection.selections.some(id=>catalog.some(x=>x.id===id && x.section!=='weapons' && x.differentAudio));
     status = await gameStatus(folder);
-    let updateResult=null;
-    try { const file=path.join(app.getPath('userData'),'updates','install-status.json');const record=JSON.parse(await fs.readFile(file,'utf8'));if(['complete','error'].includes(record.state)){updateResult=record;await fs.unlink(file);} } catch {}
-    return { updateResult, catalog: catalog.filter(x=>x.section==='weapons').map(({preview,...item})=>item), images: await images(catalog), connection, status, version: app.getVersion(), windows: process.platform === 'win32' };
+    return { catalog: catalog.filter(x=>x.section==='weapons').map(({preview,...item})=>item), images: await images(catalog), connection, status, version: app.getVersion(), windows: process.platform === 'win32' };
   });
   handle('choose-folder', async () => {
     const result = await dialog.showOpenDialog(win, { title: 'Choose Creative Destruction', defaultPath: folder || 'C:\\Creative Destruction', properties: ['openDirectory'] });

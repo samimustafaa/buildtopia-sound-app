@@ -45,31 +45,22 @@ if ((Get-Content $marker) -ne 'preserve-settings-and-backups') { throw 'Reinstal
 $desktop = Join-Path ([Environment]::GetFolderPath('Desktop')) 'BuilTopia Sound - sg0hann.lnk'
 if (!(Test-Path $desktop)) { throw 'Desktop shortcut is missing' }
 Write-Host 'Installer passed: one installation, desktop shortcut, repeat install keeps user data.'
-# Run the production Node launcher, not PowerShell Start-Process as a substitute.
-$updateRoot = Join-Path $env:TEMP 'soundswap-update-smoke'
-New-Item -ItemType Directory -Force $updateRoot | Out-Null
-$configPath = Join-Path $updateRoot 'handoff.json'
-@{ installer=$setup; executable=$second; directory=$updateRoot; version=$version; sha256=(Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant() } | ConvertTo-Json | Set-Content $configPath
-$node = (Get-Command node).Source
-$runner = (Resolve-Path 'tools/test-update-handoff.cjs').Path
-$parent = Start-Process $node -ArgumentList ('"'+$runner+'"'),('"'+$configPath+'"') -PassThru -WindowStyle Hidden
-if (!$parent.WaitForExit(30000)) { throw 'Node update handoff did not confirm readiness.' }
-if ($parent.ExitCode -ne 0) { throw 'Production Node update handoff failed.' }
-$statusPath=Join-Path $updateRoot 'install-status.json'
-$complete=$false
-for ($attempt=0; $attempt -lt 180; $attempt++) {
-  $status=Get-Content -LiteralPath $statusPath -Raw | ConvertFrom-Json
-  if ($status.state -eq 'error') { throw $status.message }
-  if ($status.state -eq 'complete') { $complete=$true; break }
-  Start-Sleep -Seconds 1
-}
-if (!$complete) { throw ('Automatic installation did not finish. Last state: '+$status.state) }
+# Exercise electron-updater using a real local manifest and the built installer.
+$electron = node -p "require('electron')"
+$nativeTest = (Resolve-Path 'tools/test-native-update.cjs').Path
+$outLog = Join-Path (Resolve-Path 'release').Path 'native-update.stdout.log'
+$errorLog = Join-Path (Resolve-Path 'release').Path 'native-update.stderr.log'
+$process = Start-Process $electron -ArgumentList ('"'+$nativeTest+'"') -PassThru -RedirectStandardOutput $outLog -RedirectStandardError $errorLog
+if (!$process.WaitForExit(120000)) { throw 'Native updater did not finish.' }
+Get-Content $outLog
+Get-Content $errorLog
+if ($process.ExitCode -ne 0) { throw 'Native updater test failed.' }
 $relaunched=$false
-for ($attempt=0; $attempt -lt 30; $attempt++) {
+for ($attempt=0; $attempt -lt 60; $attempt++) {
   if (@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $second }).Count -gt 0) { $relaunched=$true; break }
   Start-Sleep -Seconds 1
 }
-if (!$relaunched) { throw 'Automatic update did not reopen the app.' }
+if (!$relaunched) { throw 'Native update did not reopen the app.' }
 if ((Get-Content $marker) -ne 'preserve-settings-and-backups') { throw 'Update removed user data' }
 Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $second } | Stop-Process -Force
-Write-Host 'Production Node update passed: readiness confirmed, parent exited, silent installation finished, app reopened, data preserved.'
+Write-Host 'Native updater passed: verified download, silent installation, automatic relaunch, data retained.'
