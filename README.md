@@ -1,4 +1,4 @@
-# BuilTopia Sound - sg0hann
+# BuilTopia Sound
 
 Choose which BuildTopia weapon sounds to use in Creative Destruction.
 
