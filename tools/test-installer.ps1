@@ -4,7 +4,7 @@ $setup = (Resolve-Path "release/sg0hann-SoundSwap-$version-Setup.exe").Path
 function Install-SoundSwap {
   $process = Start-Process -FilePath $setup -ArgumentList '/S' -Wait -PassThru
   if ($process.ExitCode -ne 0) { throw "Installer failed: $($process.ExitCode)" }
-  $entries = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -eq 'BuilTopia Sound - sg0hann' })
+  $entries = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -like 'BuilTopia Sound - sg0hann*' })
   if ($entries.Count -ne 1) { throw "Expected one per-user installation, found $($entries.Count)" }
   $shortcut = Join-Path ([Environment]::GetFolderPath('Desktop')) 'BuilTopia Sound - sg0hann.lnk'
   if (!(Test-Path $shortcut)) { throw 'Desktop shortcut is missing' }
@@ -32,7 +32,7 @@ Set-Content $renameMarker 'keep-existing-user-data'
 $first = Install-SoundSwap
 if ($first -ne $legacyExe) { throw 'Renaming changed the installed executable path and would break update relaunch.' }
 if ((Get-Content $renameMarker) -ne 'keep-existing-user-data') { throw 'Renaming removed existing user data.' }
-$allEntries = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -eq 'BuilTopia Sound - sg0hann' -or $_.DisplayName -like 'sg0hann SoundSwap*' })
+$allEntries = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -like 'BuilTopia Sound - sg0hann*' -or $_.DisplayName -like 'sg0hann SoundSwap*' })
 if ($allEntries.Count -ne 1) { throw 'Renaming created a second app installation.' }
 Write-Host 'Rename upgrade passed: same executable path, one installation, existing data preserved.' 
 $data = Join-Path $env:APPDATA 'sg0hann SoundSwap'
