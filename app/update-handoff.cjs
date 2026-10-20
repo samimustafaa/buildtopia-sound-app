@@ -12,8 +12,8 @@ async function launchUpdate({directory,installer,sha256,executable,version}, opt
   // readFile works for packaged ASAR files; the helper runs outside the installation.
   await fs.writeFile(helper,await fs.readFile(path.join(__dirname,'update-install.ps1')));
   await fs.writeFile(launcher,await fs.readFile(path.join(__dirname,'update-launcher.js')));
-  const cancel=path.join(directory,'cancel-'+randomUUID());
-  await fs.writeFile(config,JSON.stringify({installer,sha256,executable,version,pid:process.pid,status,cancel}));
+  const id=randomUUID(),cancel=path.join(directory,'cancel-'+id);
+  await fs.writeFile(config,JSON.stringify({id,installer,sha256,executable,version,pid:process.pid,status,cancel}));
   const host=path.join(process.env.SystemRoot || 'C:\\Windows','System32','wscript.exe');
   // The GUI script host starts PowerShell with its own hidden console. Neither
   // process depends on the app's console or lifetime, and readiness is confirmed.
@@ -26,8 +26,8 @@ async function launchUpdate({directory,installer,sha256,executable,version}, opt
   try {
   while(Date.now()<deadline) {
     let record;try{record=JSON.parse((await fs.readFile(status,'utf8')).replace(/^\uFEFF/,''));}catch{}
-    if(record?.state==='ready')return true;
-    if(record?.state==='error')throw Error(record.message || 'The update helper could not start.');
+    if(record?.id===id && record.state==='ready')return true;
+    if(record?.id===id && record.state==='error')throw Error(record.message || 'The update helper could not start.');
     if(failure)throw failure;
     await delay(150);
   }

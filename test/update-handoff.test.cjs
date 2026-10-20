@@ -7,7 +7,7 @@ test('handoff waits for explicit helper readiness using the independent Windows 
  const result=launchUpdate(config,{spawn:(exe,args,options)=>{
   called=true;assert(exe.endsWith('wscript.exe'));assert.equal(options.detached,true);assert.equal(options.windowsHide,true);assert.equal(options.stdio,'ignore');
   const child=new EventEmitter();child.unref=()=>unref=true;
-  setTimeout(()=>fs.writeFile(path.join(config.directory,'install-status.json'),JSON.stringify({state:'ready'})),30);
+  setTimeout(async()=>{const job=JSON.parse(await fs.readFile(path.join(config.directory,'install.json'),'utf8'));await fs.writeFile(path.join(config.directory,'install-status.json'),JSON.stringify({id:job.id,state:'ready'}));},30);
   return child;
  }});
  await result;assert(called&&unref);const written=JSON.parse(await fs.readFile(path.join(config.directory,'install.json'),'utf8'));assert.equal(written.pid,process.pid);assert.equal(written.sha256,config.sha256);

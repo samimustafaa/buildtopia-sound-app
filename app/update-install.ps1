@@ -1,8 +1,8 @@
 param([Parameter(Mandatory=$true)][string]$ConfigPath)
 $ErrorActionPreference = 'Stop'
-$config = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
+$config = [System.IO.File]::ReadAllText($ConfigPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
 function Write-UpdateStatus([string]$State, [string]$Message='') {
-  $json = @{ state=$State; message=$Message; version=$config.version } | ConvertTo-Json -Compress
+  $json = @{ id=$config.id; state=$State; message=$Message; version=$config.version } | ConvertTo-Json -Compress
   [System.IO.File]::WriteAllText($config.status, $json, [System.Text.UTF8Encoding]::new($false))
 }
 $parentExited = $false
